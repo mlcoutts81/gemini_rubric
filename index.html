@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="relative shrink-0" id="nav-dropdown-wrapper">
-                    <button id="nav-dropdown-btn" onclick="toggleNavDropdown()" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-white border border-slate-700/80 shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-scotblue-500 cursor-pointer">
+                    <button id="nav-dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-white border border-slate-700/80 shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-scotblue-500 cursor-pointer">
                         <i id="nav-current-icon" class="fa-solid fa-clipboard-check text-blue-400 text-sm"></i>
                         <span id="nav-current-title" class="font-semibold text-xs sm:text-sm">New Observation</span>
                         <i id="nav-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs ml-1 transition-transform duration-200"></i>
@@ -82,7 +82,7 @@
                     <!-- Dropdown Menu items -->
                     <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-60 sm:w-64 rounded-2xl bg-slate-800/95 border border-slate-700/90 shadow-2xl z-50 py-2 divide-y divide-slate-700/50 backdrop-blur-xl">
                         <div class="py-1">
-                            <button onclick="selectTabFromDropdown('observe')" id="dropdown-item-observe" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer">
+                            <button type="button" data-tab="observe" id="dropdown-item-observe" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
                                         <i class="fa-solid fa-clipboard-check"></i>
@@ -91,7 +91,7 @@
                                 </div>
                                 <i class="fa-solid fa-check text-blue-400 text-xs check-indicator" id="check-observe"></i>
                             </button>
-                            <button onclick="selectTabFromDropdown('history')" id="dropdown-item-history" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
+                            <button type="button" data-tab="history" id="dropdown-item-history" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition">
                                         <i class="fa-solid fa-chart-line"></i>
@@ -103,7 +103,7 @@
                                     <i class="fa-solid fa-check text-blue-400 text-xs check-indicator hidden" id="check-history"></i>
                                 </div>
                             </button>
-                            <button onclick="selectTabFromDropdown('reference')" id="dropdown-item-reference" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
+                            <button type="button" data-tab="reference" id="dropdown-item-reference" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition">
                                         <i class="fa-solid fa-book-open"></i>
@@ -549,82 +549,99 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Explicitly attach dropdown handlers to window for global inline accessibility
-        window.toggleNavDropdown = function() {
-            const menu = document.getElementById('nav-dropdown-menu');
-            const chevron = document.getElementById('nav-chevron');
-            const btn = document.getElementById('nav-dropdown-btn');
-            if (!menu) return;
-            
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                menu.classList.remove('hidden');
-                if (chevron) chevron.style.transform = 'rotate(180deg)';
-                if (btn) btn.setAttribute('aria-expanded', 'true');
-            } else {
-                menu.classList.add('hidden');
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-                if (btn) btn.setAttribute('aria-expanded', 'false');
-            }
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtn = document.getElementById('nav-dropdown-btn');
+            const navMenu = document.getElementById('nav-dropdown-menu');
+            const navChevron = document.getElementById('nav-chevron');
 
-        window.selectTabFromDropdown = function(tabId) {
-            // Hide all main section tabs
-            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            
-            // Show selected section tab
-            const selectedTab = document.getElementById('tab-' + tabId);
-            if (selectedTab) selectedTab.classList.remove('hidden');
-
-            // Update dropdown button text & icon
-            const titleEl = document.getElementById('nav-current-title');
-            const iconEl = document.getElementById('nav-current-icon');
-            
-            if (tabId === 'observe') {
-                if (titleEl) titleEl.textContent = 'New Observation';
-                if (iconEl) iconEl.className = 'fa-solid fa-clipboard-check text-blue-400 text-sm';
-            } else if (tabId === 'history') {
-                if (titleEl) titleEl.textContent = 'History & Analytics';
-                if (iconEl) iconEl.className = 'fa-solid fa-chart-line text-indigo-400 text-sm';
-                if (typeof renderHistoryTable === 'function') renderHistoryTable();
-            } else if (tabId === 'reference') {
-                if (titleEl) titleEl.textContent = 'Rubric Reference';
-                if (iconEl) iconEl.className = 'fa-solid fa-book-open text-teal-400 text-sm';
-            }
-
-            // Update item highlights & checkmarks
-            ['observe', 'history', 'reference'].forEach(id => {
-                const itemBtn = document.getElementById('dropdown-item-' + id);
-                const checkIcon = document.getElementById('check-' + id);
-                if (id === tabId) {
-                    if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer';
-                    if (checkIcon) checkIcon.classList.remove('hidden');
+            function toggleMenu(forceState) {
+                if (!navMenu) return;
+                const shouldShow = forceState !== undefined ? forceState : navMenu.classList.contains('hidden');
+                if (shouldShow) {
+                    navMenu.classList.remove('hidden');
+                    if (navChevron) navChevron.style.transform = 'rotate(180deg)';
+                    if (navBtn) navBtn.setAttribute('aria-expanded', 'true');
                 } else {
-                    if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer';
-                    if (checkIcon) checkIcon.classList.add('hidden');
+                    navMenu.classList.add('hidden');
+                    if (navChevron) navChevron.style.transform = 'rotate(0deg)';
+                    if (navBtn) navBtn.setAttribute('aria-expanded', 'false');
+                }
+            }
+
+            function switchTab(tabId) {
+                // Hide all main sections
+                document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+
+                // Show target section
+                const selectedTab = document.getElementById('tab-' + tabId);
+                if (selectedTab) selectedTab.classList.remove('hidden');
+
+                // Update nav title and icon
+                const titleEl = document.getElementById('nav-current-title');
+                const iconEl = document.getElementById('nav-current-icon');
+
+                if (tabId === 'observe') {
+                    if (titleEl) titleEl.textContent = 'New Observation';
+                    if (iconEl) iconEl.className = 'fa-solid fa-clipboard-check text-blue-400 text-sm';
+                } else if (tabId === 'history') {
+                    if (titleEl) titleEl.textContent = 'History & Analytics';
+                    if (iconEl) iconEl.className = 'fa-solid fa-chart-line text-indigo-400 text-sm';
+                    if (typeof renderHistoryTable === 'function') renderHistoryTable();
+                } else if (tabId === 'reference') {
+                    if (titleEl) titleEl.textContent = 'Rubric Reference';
+                    if (iconEl) iconEl.className = 'fa-solid fa-book-open text-teal-400 text-sm';
+                }
+
+                // Update active tab highlights
+                ['observe', 'history', 'reference'].forEach(id => {
+                    const itemBtn = document.getElementById('dropdown-item-' + id);
+                    const checkIcon = document.getElementById('check-' + id);
+                    if (id === tabId) {
+                        if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer';
+                        if (checkIcon) checkIcon.classList.remove('hidden');
+                    } else {
+                        if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer';
+                        if (checkIcon) checkIcon.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Bind toggle button click with stopPropagation
+            if (navBtn) {
+                navBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleMenu();
+                });
+            }
+
+            // Bind menu item buttons
+            document.querySelectorAll('[data-tab]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                    toggleMenu(false);
+                });
+            });
+
+            // Close when clicking outside wrapper
+            document.addEventListener('click', function(e) {
+                const wrapper = document.getElementById('nav-dropdown-wrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    toggleMenu(false);
                 }
             });
 
-            // Close menu
-            const menu = document.getElementById('nav-dropdown-menu');
-            if (menu) menu.classList.add('hidden');
-            const chevron = document.getElementById('nav-chevron');
-            if (chevron) chevron.style.transform = 'rotate(0deg)';
-            const btn = document.getElementById('nav-dropdown-btn');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-        };
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    toggleMenu(false);
+                }
+            });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const wrapper = document.getElementById('nav-dropdown-wrapper');
-            const menu = document.getElementById('nav-dropdown-menu');
-            if (wrapper && !wrapper.contains(event.target) && menu && !menu.classList.contains('hidden')) {
-                menu.classList.add('hidden');
-                const chevron = document.getElementById('nav-chevron');
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-                const btn = document.getElementById('nav-dropdown-btn');
-                if (btn) btn.setAttribute('aria-expanded', 'false');
-            }
+            // Expose fallback window functions
+            window.toggleNavDropdown = toggleMenu;
+            window.selectTabFromDropdown = switchTab;
         });
 
         const RUBRIC_DATA = [
