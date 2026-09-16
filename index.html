@@ -11,14 +11,20 @@
     <!-- Google Sans Flex Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/google-sans-flex@latest/index.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/google-sans-flex@latest/variable.css" />
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['"Google Sans Flex"', 'sans-serif'],
-                    },
+                    }
+                }
+            }
         }
+    </script>
+    <style>
         .dim-btn.selected {
             background-color: #4f46e5;
             color: white;
