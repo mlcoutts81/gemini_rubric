@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,714 +8,1066 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Sans Flex Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/google-sans-flex@latest/index.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/google-sans-flex@latest/variable.css" />
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['"Google Sans Flex"', 'sans-serif'],
                     },
-                    colors: {
-                        scotblue: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#0065bf',
-                            600: '#0052a3',
-                            700: '#003e80',
-                            800: '#002b5c',
-                        }
-                    }
-                }
-            }
         }
-    </script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        .dim-btn.selected {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
         }
+        
+        /* Hidden element for clipboard copying */
+        #copy-area {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        /* Tab hiding */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Hide scrollbar utility */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="h-full font-sans text-slate-800 antialiased flex flex-col">
+<body class="text-slate-800">
 
-    <!-- Header Navigation -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-800/80 backdrop-blur-md bg-slate-900/95">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-            <div class="flex flex-row items-center justify-between gap-3 sm:gap-4">
-                
-                <!-- Logo & Title Area -->
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-teal-400 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg shadow-blue-900/30 shrink-0">
-                        <i class="fa-solid fa-sparkles"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center flex-wrap gap-2">
-                            <h1 class="font-bold text-base sm:text-lg md:text-xl tracking-tight leading-snug text-white">
-                                Gemini Pupil Experience Observer
-                            </h1>
-                            <span class="text-[10px] sm:text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-full whitespace-nowrap">
-                                CfE & SAMR
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-400 font-normal truncate mt-0.5">
-                            EdTech Observation & Coaching Tool for Scottish Schools
-                        </p>
-                    </div>
+    <!-- Header (Sticky, Backdrop Blur) -->
+    <header class="sticky top-0 z-50 w-full backdrop-blur-md bg-slate-900/95 border-b border-slate-800 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            <!-- Branding, Title & Badge -->
+            <div class="flex items-start sm:items-center gap-3 sm:gap-4">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-3 rounded-xl shadow-lg shadow-indigo-500/20 flex-shrink-0 mt-1 sm:mt-0">
+                    <i class="fa-solid fa-satellite-dish text-xl sm:text-2xl"></i>
                 </div>
-
-                <div class="relative shrink-0" id="nav-dropdown-wrapper">
-                    <button id="nav-dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-white border border-slate-700/80 shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-scotblue-500 cursor-pointer">
-                        <i id="nav-current-icon" class="fa-solid fa-clipboard-check text-blue-400 text-sm"></i>
-                        <span id="nav-current-title" class="font-semibold text-xs sm:text-sm">New Observation</span>
-                        <i id="nav-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs ml-1 transition-transform duration-200"></i>
-                    </button>
-
-                    <!-- Dropdown Menu items -->
-                    <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-60 sm:w-64 rounded-2xl bg-slate-800/95 border border-slate-700/90 shadow-2xl z-50 py-2 divide-y divide-slate-700/50 backdrop-blur-xl">
-                        <div class="py-1">
-                            <button type="button" data-tab="observe" id="dropdown-item-observe" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
-                                        <i class="fa-solid fa-clipboard-check"></i>
-                                    </div>
-                                    <span class="font-semibold">New Observation</span>
-                                </div>
-                                <i class="fa-solid fa-check text-blue-400 text-xs check-indicator" id="check-observe"></i>
-                            </button>
-                            <button type="button" data-tab="history" id="dropdown-item-history" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition">
-                                        <i class="fa-solid fa-chart-line"></i>
-                                    </div>
-                                    <span class="font-medium">History & Analytics</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span id="saved-count" class="px-2 py-0.5 bg-slate-700 text-blue-300 rounded-full text-[10px] font-bold border border-slate-600">0</span>
-                                    <i class="fa-solid fa-check text-blue-400 text-xs check-indicator hidden" id="check-history"></i>
-                                </div>
-                            </button>
-                            <button type="button" data-tab="reference" id="dropdown-item-reference" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition">
-                                        <i class="fa-solid fa-book-open"></i>
-                                    </div>
-                                    <span class="font-medium">Rubric Reference</span>
-                                </div>
-                                <i class="fa-solid fa-check text-blue-400 text-xs check-indicator hidden" id="check-reference"></i>
-                            </button>
-                        </div>
+                <div class="flex flex-col">
+                    <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                        <h1 class="text-lg sm:text-2xl md:text-3xl font-bold text-white tracking-tight leading-none">Gemini in the Classroom</h1>
+                        <span class="inline-flex items-center rounded-md bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-500/20">CfE & SAMR</span>
                     </div>
+                    <p class="text-xs sm:text-sm text-slate-400 font-medium">Pupil Experience Observation & Coaching Tool</p>
                 </div>
-
             </div>
+            
+            <!-- Navigation Tabs (Glassmorphic Pill) -->
+            <div class="flex bg-slate-800/90 p-1.5 rounded-full ring-1 ring-slate-700/50 shadow-inner w-full md:w-auto overflow-x-auto hide-scrollbar">
+                <button onclick="switchTab('observe')" id="tab-btn-observe" class="flex-1 md:flex-none inline-flex items-center justify-center whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all duration-200 bg-indigo-500 text-white shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-clipboard-check mr-2"></i>Observe
+                </button>
+                <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="flex-1 md:flex-none inline-flex items-center justify-center whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Analytics
+                </button>
+                <button onclick="switchTab('rubric')" id="tab-btn-rubric" class="flex-1 md:flex-none inline-flex items-center justify-center whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
+                    <i class="fa-solid fa-book-open mr-2"></i>Rubric
+                </button>
+            </div>
+            
         </div>
-
-        <!-- Toast Notification Container -->
-        <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-
-        <!-- TAB 1: NEW OBSERVATION VIEW -->
-        <section id="tab-observe" class="space-y-6">
-            
-            <!-- Metadata Form Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6 transition-all">
-                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                    <div class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
-                        <i class="fa-solid fa-sliders text-scotblue-500"></i>
-                        <span>1. Session Context & Anonymous Metadata</span>
-                    </div>
-                    <span class="text-xs text-slate-400 italic"><i class="fa-solid fa-user-shield text-teal-600"></i> Anonymous Data Collection</span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Local Authority / Council</label>
-                        <select id="meta-la" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
-                            <option value="Anonymous Authority">Anonymous / Select LA...</option>
-                            <option value="Aberdeen City">Aberdeen City Council</option>
-                            <option value="Aberdeenshire">Aberdeenshire Council</option>
-                            <option value="Angus">Angus Council</option>
-                            <option value="Argyll and Bute">Argyll and Bute Council</option>
-                            <option value="City of Edinburgh">City of Edinburgh Council</option>
-                            <option value="Clackmannanshire">Clackmannanshire Council</option>
-                            <option value="Dumfries and Galloway">Dumfries and Galloway Council</option>
-                            <option value="Dundee City">Dundee City Council</option>
-                            <option value="East Ayrshire">East Ayrshire Council</option>
-                            <option value="East Dunbartonshire">East Dunbartonshire Council</option>
-                            <option value="East Lothian">East Lothian Council</option>
-                            <option value="East Renfrewshire">East Renfrewshire Council</option>
-                            <option value="Falkirk">Falkirk Council</option>
-                            <option value="Fife">Fife Council</option>
-                            <option value="Glasgow City">Glasgow City Council</option>
-                            <option value="Highland">Highland Council</option>
-                            <option value="Inverclyde">Inverclyde Council</option>
-                            <option value="Midlothian">Midlothian Council</option>
-                            <option value="Moray">Moray Council</option>
-                            <option value="Na h-Eileanan Siar">Na h-Eileanan Siar (Western Isles)</option>
-                            <option value="North Ayrshire">North Ayrshire Council</option>
-                            <option value="North Lanarkshire">North Lanarkshire Council</option>
-                            <option value="Orkney Islands">Orkney Islands Council</option>
-                            <option value="Perth and Kinross">Perth and Kinross Council</option>
-                            <option value="Renfrewshire">Renfrewshire Council</option>
-                            <option value="Scottish Borders">Scottish Borders Council</option>
-                            <option value="Shetland Islands">Shetland Islands Council</option>
-                            <option value="South Ayrshire">South Ayrshire Council</option>
-                            <option value="South Lanarkshire">South Lanarkshire Council</option>
-                            <option value="Stirling">Stirling Council</option>
-                            <option value="West Dunbartonshire">West Dunbartonshire Council</option>
-                            <option value="West Lothian">West Lothian Council</option>
-                            <option value="Other / Independent">Other / Independent / Grant-Maintained</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Stage / Class Level</label>
-                        <select id="meta-stage" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
-                            <option value="Unspecified Stage">Select Stage...</option>
-                            <option value="Early / P1-P3">Early Stage (P1-P3)</option>
-                            <option value="Primary / P4-P7">First / Second Stage (P4-P7)</option>
-                            <option value="Secondary / BGE (S1-S3)">BGE Secondary (S1-S3)</option>
-                            <option value="Secondary / Senior Phase (S4-S6)">Senior Phase (S4-S6)</option>
-                            <option value="ASN / Specialist Provision">ASN / Specialist Provision</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Subject / Curriculum Area</label>
-                        <input type="text" id="meta-subject" placeholder="e.g. Science, Modern Languages, BGE Literacy" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Observation Date & Time</label>
-                        <input type="datetime-local" id="meta-datetime" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5-Minute Rapid Glance Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
-                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                    <div>
-                        <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
-                            <i class="fa-solid fa-stopwatch text-amber-500"></i>
-                            <span>2. Rapid Observation Checklist (5-Minute Classroom Glance)</span>
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Quickly tap the behaviors you notice during your initial walkthrough.</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Check 1 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-keyboard mr-1"></i> What are pupils typing?</span>
-                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-typing" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Static query:</strong> e.g., <em>"What is photosynthesis?"</em> (L1–2)</span>
-                                </label>
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-typing" value="3" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Iterative / Context prompt:</strong> e.g., <em>"Explain to a 7yr old using a cooking analogy..."</em> (L3–4)</span>
-                                </label>
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-typing" value="5" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Strategic workflow:</strong> e.g., coding, critiquing draft essays, or debugging logic (L4–5)</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check 2 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-copy mr-1"></i> What are pupils doing with output?</span>
-                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-output" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Copy & Paste:</strong> Directly pasting output without editing (L1)</span>
-                                </label>
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-output" value="3" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Read & Paraphrase:</strong> Putting output into their own words (L2–3)</span>
-                                </label>
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-output" value="5" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Question & Fact-Check:</strong> Verifying facts, finding hallucinations, re-prompting (L4–5)</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check 3 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-bullseye mr-1"></i> Where is pupil focus?</span>
-                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-focus" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Finding answers:</strong> Focused solely on getting answers from screen (L1–2)</span>
-                                </label>
-                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
-                                    <input type="radio" name="check-focus" value="4" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
-                                    <span><strong>Sounding board:</strong> Using Gemini to test and deepen their own thinking (L3–5)</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5 Rubric Dimensions Interactive Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-3 border-b border-slate-100 gap-2">
-                    <div>
-                        <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
-                            <i class="fa-solid fa-layer-group text-scotblue-500"></i>
-                            <span>3. Assessment Across 5 Core Dimensions</span>
-                        </h2>
-                        <p class="text-xs text-slate-500">Select the observed level (1 to 5) for each rubric dimension.</p>
-                    </div>
-                    <!-- Overall Score Badge -->
-                    <div class="flex items-center gap-3 bg-slate-100 p-2.5 rounded-xl border border-slate-200 self-start sm:self-auto">
-                        <span class="text-xs font-medium text-slate-600">Calculated Profile:</span>
-                        <span id="calculated-badge" class="px-3 py-1 bg-scotblue-600 text-white text-xs font-bold rounded-lg shadow-sm">Level 1: Passive Use</span>
-                    </div>
-                </div>
-
-                <!-- Dimension 1 -->
-                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-0">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 1</span>
-                            <h3 class="font-bold text-slate-800 text-base">Pupil Role & Agency</h3>
-                        </div>
-                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-0">
-                            <!-- Level selector buttons auto generated or styled -->
-                            <button onclick="setDimensionLevel(0, 1)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Passive</button>
-                            <button onclick="setDimensionLevel(0, 2)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Guided</button>
-                            <button onclick="setDimensionLevel(0, 3)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Interactive</button>
-                            <button onclick="setDimensionLevel(0, 4)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Critical</button>
-                            <button onclick="setDimensionLevel(0, 5)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Agency</button>
-                        </div>
-                    </div>
-                    <div id="dim-desc-0" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
-                        <!-- Description auto-populates via JS -->
-                    </div>
-                </div>
-
-                <!-- Dimension 2 -->
-                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-1">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 2</span>
-                            <h3 class="font-bold text-slate-800 text-base">Cognitive Depth (Bloom's Taxonomy / CfE)</h3>
-                        </div>
-                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-1">
-                            <button onclick="setDimensionLevel(1, 1)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Remember</button>
-                            <button onclick="setDimensionLevel(1, 2)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Understand</button>
-                            <button onclick="setDimensionLevel(1, 3)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Analyze</button>
-                            <button onclick="setDimensionLevel(1, 4)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Evaluate</button>
-                            <button onclick="setDimensionLevel(1, 5)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Create</button>
-                        </div>
-                    </div>
-                    <div id="dim-desc-1" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
-                    </div>
-                </div>
-
-                <!-- Dimension 3 -->
-                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-2">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 3</span>
-                            <h3 class="font-bold text-slate-800 text-base">SAMR Task Redesign Focus</h3>
-                        </div>
-                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-2">
-                            <button onclick="setDimensionLevel(2, 1)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Substitution</button>
-                            <button onclick="setDimensionLevel(2, 2)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Augmentation</button>
-                            <button onclick="setDimensionLevel(2, 3)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Modification</button>
-                            <button onclick="setDimensionLevel(2, 4)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Redefinition (A)</button>
-                            <button onclick="setDimensionLevel(2, 5)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Redefinition (B)</button>
-                        </div>
-                    </div>
-                    <div id="dim-desc-2" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
-                    </div>
-                </div>
-
-                <!-- Dimension 4 -->
-                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-3">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 4</span>
-                            <h3 class="font-bold text-slate-800 text-base">TPACK Synergy</h3>
-                        </div>
-                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-3">
-                            <button onclick="setDimensionLevel(3, 1)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: TK</button>
-                            <button onclick="setDimensionLevel(3, 2)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: TCK</button>
-                            <button onclick="setDimensionLevel(3, 3)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: TPK</button>
-                            <button onclick="setDimensionLevel(3, 4)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Integrated</button>
-                            <button onclick="setDimensionLevel(3, 5)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Mastered</button>
-                        </div>
-                    </div>
-                    <div id="dim-desc-3" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
-                    </div>
-                </div>
-
-                <!-- Dimension 5 -->
-                <div class="dimension-card border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 5</span>
-                            <h3 class="font-bold text-slate-800 text-base">Ethical & Critical Digital Literacy</h3>
-                        </div>
-                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-4">
-                            <button onclick="setDimensionLevel(4, 1)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Unaware</button>
-                            <button onclick="setDimensionLevel(4, 2)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Passive</button>
-                            <button onclick="setDimensionLevel(4, 3)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Verifying</button>
-                            <button onclick="setDimensionLevel(4, 4)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Critical</button>
-                            <button onclick="setDimensionLevel(4, 5)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Ethical Driver</button>
-                        </div>
-                    </div>
-                    <div id="dim-desc-4" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Qualitative Comments & Coaching Field -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
-                <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg mb-3">
-                    <i class="fa-solid fa-comment-dots text-emerald-600"></i>
-                    <span>4. Qualitative Observation Comments & Evidence</span>
-                </h2>
+    <div class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <!-- Main Content Area -->
+        <main>
+            <!-- TAB 1: OBSERVATION FORM -->
+            <div id="tab-observe" class="tab-content active space-y-6">
                 
-                <div class="space-y-4 text-sm">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Qualitative Evidence & Specific Examples</label>
-                        <textarea id="obs-comments" rows="3" placeholder="Note pupil responses, notable prompts typed, instances of pupils checking for hallucinations, or creative use cases..." class="w-full rounded-xl border-slate-300 bg-slate-50 border p-3 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none"></textarea>
-                    </div>
-
-                    <!-- Recommended Coaching Questions Box -->
-                    <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-scotblue-700 uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fa-solid fa-lightbulb text-amber-500"></i> Suggested Post-Observation Coaching Questions
-                            </span>
-                            <span class="text-xs text-slate-400">Auto-tailored to calculated profile</span>
-                        </div>
-                        <div id="suggested-coaching-box" class="text-xs sm:text-sm text-slate-700 space-y-1 bg-white p-3 rounded-lg border border-slate-200 font-medium">
-                            <!-- JS populates based on overall score -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Export & Action Bar -->
-            <div class="bg-slate-900 text-white rounded-2xl shadow-lg p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                    <h3 class="font-bold text-base flex items-center gap-2">
-                        <i class="fa-solid fa-file-export text-teal-400"></i> Completed Observation Actions
-                    </h3>
-                    <p class="text-xs text-slate-300 mt-1">Export directly formatted for Google Docs, save locally, or generate document.</p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <!-- COPY TO GOOGLE DOCS BUTTON -->
-                    <button onclick="copyFormattedForGoogleDocs()" class="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-copy"></i> Copy for Google Doc
-                    </button>
-
-                    <!-- DOWNLOAD HTML REPORT -->
-                    <button onclick="downloadReportDoc()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium text-sm transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-download"></i> Download .doc
-                    </button>
-
-                    <!-- SAVE TO LOCAL HISTORY -->
-                    <button onclick="saveObservationLocally()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-floppy-disk"></i> Save Entry
-                    </button>
-                </div>
-            </div>
-
-        </section>
-
-
-        <!-- TAB 2: HISTORY & AGGREGATE ANALYTICS -->
-        <section id="tab-history" class="space-y-6 hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4 mb-6">
-                    <div>
-                        <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-scotblue-600"></i> Observation History & Aggregate Data
-                        </h2>
-                        <p class="text-xs text-slate-500">Anonymous data collected on this device across classroom visits.</p>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button onclick="exportAllCSV()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-200">
-                            <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i> Export CSV
-                        </button>
-                        <button onclick="exportAllJSON()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-200">
-                            <i class="fa-solid fa-code text-blue-600 text-sm"></i> Export JSON
-                        </button>
-                        <button onclick="clearHistory()" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold transition flex items-center gap-1 border border-red-200">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stats summary grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-                        <span class="text-xs text-slate-500 font-medium block">Total Observations</span>
-                        <span id="stat-total" class="text-2xl font-extrabold text-slate-800">0</span>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-                        <span class="text-xs text-slate-500 font-medium block">Average Level</span>
-                        <span id="stat-avg" class="text-2xl font-extrabold text-scotblue-600">0.0</span>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-                        <span class="text-xs text-slate-500 font-medium block">Most Frequent Level</span>
-                        <span id="stat-mode" class="text-2xl font-extrabold text-amber-600">-</span>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-                        <span class="text-xs text-slate-500 font-medium block">Redefinition % (L4/5)</span>
-                        <span id="stat-redef" class="text-2xl font-extrabold text-emerald-600">0%</span>
-                    </div>
-                </div>
-
-                <!-- Saved List Table -->
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table class="w-full text-left text-xs sm:text-sm">
-                        <thead class="bg-slate-100 text-slate-700 uppercase text-[11px] font-bold tracking-wider">
-                            <tr>
-                                <th class="p-3">Date</th>
-                                <th class="p-3">Authority / Stage</th>
-                                <th class="p-3">Subject</th>
-                                <th class="p-3">Assessed Profile</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body" class="divide-y divide-slate-200 text-slate-600">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: RUBRIC REFERENCE MATRIX -->
-        <section id="tab-reference" class="space-y-6 hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
-                <div class="pb-4 border-b border-slate-100 mb-4">
-                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-book-open text-scotblue-600"></i> Full Pupil Experience Observation Matrix
+                <!-- Section: Context -->
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center">
+                        <i class="fa-solid fa-building-columns text-indigo-500 w-6"></i> Observation Context
                     </h2>
-                    <p class="text-xs text-slate-500">Mapping pupil experience from Substitution to Redefinition under CfE & TPACK.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Local Authority</label>
+                            <select id="la-input" class="w-full rounded-lg border-slate-300 border p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white">
+                                <option value="" disabled selected>Select LA...</option>
+                                <option value="Aberdeen City">Aberdeen City</option>
+                                <option value="Aberdeenshire">Aberdeenshire</option>
+                                <option value="Angus">Angus</option>
+                                <option value="Argyll and Bute">Argyll and Bute</option>
+                                <option value="City of Edinburgh">City of Edinburgh</option>
+                                <option value="Clackmannanshire">Clackmannanshire</option>
+                                <option value="Dumfries and Galloway">Dumfries and Galloway</option>
+                                <option value="Dundee City">Dundee City</option>
+                                <option value="East Ayrshire">East Ayrshire</option>
+                                <option value="East Dunbartonshire">East Dunbartonshire</option>
+                                <option value="East Lothian">East Lothian</option>
+                                <option value="East Renfrewshire">East Renfrewshire</option>
+                                <option value="Falkirk">Falkirk</option>
+                                <option value="Fife">Fife</option>
+                                <option value="Glasgow City">Glasgow City</option>
+                                <option value="Highland">Highland</option>
+                                <option value="Inverclyde">Inverclyde</option>
+                                <option value="Midlothian">Midlothian</option>
+                                <option value="Moray">Moray</option>
+                                <option value="Na h-Eileanan Siar">Na h-Eileanan Siar</option>
+                                <option value="North Ayrshire">North Ayrshire</option>
+                                <option value="North Lanarkshire">North Lanarkshire</option>
+                                <option value="Orkney Islands">Orkney Islands</option>
+                                <option value="Perth and Kinross">Perth and Kinross</option>
+                                <option value="Renfrewshire">Renfrewshire</option>
+                                <option value="Scottish Borders">Scottish Borders</option>
+                                <option value="Shetland Islands">Shetland Islands</option>
+                                <option value="South Ayrshire">South Ayrshire</option>
+                                <option value="South Lanarkshire">South Lanarkshire</option>
+                                <option value="Stirling">Stirling</option>
+                                <option value="West Dunbartonshire">West Dunbartonshire</option>
+                                <option value="West Lothian">West Lothian</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">School</label>
+                            <input type="text" id="school-input" placeholder="School Name..." class="w-full rounded-lg border-slate-300 border p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Subject</label>
+                            <input type="text" id="subject-input" placeholder="e.g., Computing..." class="w-full rounded-lg border-slate-300 border p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Level / Year</label>
+                            <input type="text" id="level-input" placeholder="e.g., S3..." class="w-full rounded-lg border-slate-300 border p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Date</label>
+                            <input type="date" id="date-input" class="w-full rounded-lg border-slate-300 border p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Section: Rapid Checklist (Left Column) -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h2 class="text-lg font-bold mb-1 text-slate-800 flex items-center">
+                                <i class="fa-solid fa-bolt text-amber-500 w-6"></i> 5-Min Rapid Glance
+                            </h2>
+                            <p class="text-xs text-slate-500 mb-5">Quick assessment for fast walkthroughs.</p>
+                            
+                            <div class="space-y-5">
+                                <!-- Q1 -->
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-700 mb-2">1. What are pupils typing?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q1" value="1" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> None / Teacher led</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q1" value="2" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Single words / Fact retrieval</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q1" value="3" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Short functional sentences</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q1" value="4" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Iterative / multi-turn prompts</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q1" value="5" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Complex, specific prompt chains</label>
+                                    </div>
+                                </div>
+                                <!-- Q2 -->
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-700 mb-2">2. What are they doing with output?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q2" value="1" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Passive viewing</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q2" value="2" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Copying & pasting directly</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q2" value="3" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Minor editing / reading closely</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q2" value="4" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Fact-checking / Critiquing</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q2" value="5" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Synthesizing into new works</label>
+                                    </div>
+                                </div>
+                                <!-- Q3 -->
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-700 mb-2">3. Where is pupil focus?</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q3" value="1" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Off-task / Distracted</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q3" value="2" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Novelty of the tool</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q3" value="3" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Fast task completion</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q3" value="4" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Deep subject matter / content</label>
+                                        <label class="flex items-center text-sm cursor-pointer"><input type="radio" name="rapid-q3" value="5" class="mr-2 text-indigo-600 focus:ring-indigo-500" onchange="calculateLevels()"> Metacognition (Learning process)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Section: Coaching Prompt Assistant -->
+                        <section class="bg-gradient-to-b from-indigo-50 to-white p-6 rounded-2xl shadow-sm border border-indigo-100 h-full">
+                            <h2 class="text-lg font-bold mb-3 text-indigo-900 flex items-center">
+                                <i class="fa-solid fa-lightbulb text-indigo-500 w-6"></i> Coaching Assistant
+                            </h2>
+                            <div class="mb-4">
+                                <p class="text-xs text-slate-500 font-semibold uppercase">Calculated Overall Level</p>
+                                <div id="overall-level-display" class="text-3xl font-black text-indigo-600 mt-1">L--</div>
+                            </div>
+                            <div id="coaching-prompts-container" class="text-sm text-slate-700 space-y-3 bg-white p-4 rounded-xl border border-indigo-50 shadow-inner min-h-[150px]">
+                                <p class="text-slate-400 italic text-center mt-8">Select criteria to generate tailored post-observation questions for the teacher.</p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Section: 5-Dimension Rubric (Right Column) -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h2 class="text-lg font-bold mb-1 text-slate-800 flex items-center">
+                                <i class="fa-solid fa-layer-group text-purple-500 w-6"></i> 5-Dimension Detailed Scoring
+                            </h2>
+                            <p class="text-xs text-slate-500 mb-6">Select 1 (Passive) to 5 (Transformative) for observed dimensions.</p>
+                            
+                            <div class="space-y-6">
+                                <!-- Dim 1 -->
+                                <div>
+                                    <div class="flex justify-between items-end mb-2">
+                                        <h3 class="text-sm font-bold text-slate-800">1. Pupil Role & Agency</h3>
+                                        <span class="text-xs text-slate-400" id="desc-dim1">Select a score</span>
+                                    </div>
+                                    <div class="flex gap-2" id="grid-dim1">
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 1, 'Passive Viewer')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 2, 'Directed User')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 3, 'Active Prompt Refiner')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 4, 'Collaborative Partner')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 5, 'Workflow Designer')">5</button>
+                                    </div>
+                                </div>
+
+                                <!-- Dim 2 -->
+                                <div>
+                                    <div class="flex justify-between items-end mb-2">
+                                        <h3 class="text-sm font-bold text-slate-800">2. Cognitive Depth (CfE/Bloom's)</h3>
+                                        <span class="text-xs text-slate-400" id="desc-dim2">Select a score</span>
+                                    </div>
+                                    <div class="flex gap-2" id="grid-dim2">
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 1, 'Remembering')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 2, 'Understanding')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 3, 'Applying')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 4, 'Analyzing/Evaluating')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 5, 'Creating/Innovating')">5</button>
+                                    </div>
+                                </div>
+
+                                <!-- Dim 3 -->
+                                <div>
+                                    <div class="flex justify-between items-end mb-2">
+                                        <h3 class="text-sm font-bold text-slate-800">3. SAMR Focus</h3>
+                                        <span class="text-xs text-slate-400" id="desc-dim3">Select a score</span>
+                                    </div>
+                                    <div class="flex gap-2" id="grid-dim3">
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 1, 'Pre-adoption')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 2, 'Substitution')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 3, 'Augmentation')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 4, 'Modification')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 5, 'Redefinition')">5</button>
+                                    </div>
+                                </div>
+
+                                <!-- Dim 4 -->
+                                <div>
+                                    <div class="flex justify-between items-end mb-2">
+                                        <h3 class="text-sm font-bold text-slate-800">4. TPACK Synergy</h3>
+                                        <span class="text-xs text-slate-400" id="desc-dim4">Select a score</span>
+                                    </div>
+                                    <div class="flex gap-2" id="grid-dim4">
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 1, 'Tech disconnected')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 2, 'Tech drives content')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 3, 'Tech supports pedagogy')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 4, 'Strong Integration')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 5, 'Perfect Synergy')">5</button>
+                                    </div>
+                                </div>
+
+                                <!-- Dim 5 -->
+                                <div>
+                                    <div class="flex justify-between items-end mb-2">
+                                        <h3 class="text-sm font-bold text-slate-800">5. Ethical Literacy</h3>
+                                        <span class="text-xs text-slate-400" id="desc-dim5">Select a score</span>
+                                    </div>
+                                    <div class="flex gap-2" id="grid-dim5">
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 1, 'Blind trust')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 2, 'Basic awareness')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 3, 'Spots hallucinations')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 4, 'Active fact-checking')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 5, 'Understands bias/limits')">5</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Section: Notes -->
+                        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h2 class="text-lg font-bold mb-3 text-slate-800 flex items-center">
+                                <i class="fa-regular fa-comment-dots text-emerald-500 w-6"></i> Observation Notes
+                            </h2>
+                            <textarea id="comments-input" rows="4" placeholder="Record specific examples of pupil reactions, or how the technology impacted the learning intentions..." class="w-full rounded-xl border-slate-300 border p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition-all"></textarea>
+                            
+                            <h2 class="text-lg font-bold mt-6 mb-3 text-slate-800 flex items-center">
+                                <i class="fa-solid fa-terminal text-blue-500 w-6"></i> Notable Pupil Prompts
+                            </h2>
+                            <textarea id="prompts-input" rows="3" placeholder="Capture specific, interesting prompts used by the teacher or pupils here to build your prompt bank..." class="w-full rounded-xl border-slate-300 border p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition-all font-mono text-slate-600 bg-slate-50"></textarea>
+                        </section>
+                    </div>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-xs text-left border-collapse min-w-[800px]">
-                        <thead>
-                            <tr class="bg-slate-800 text-white text-center">
-                                <th class="p-3 w-1/6 text-left">Dimension</th>
-                                <th class="p-3 bg-red-900/40 border-l border-slate-700">L1: Passive</th>
-                                <th class="p-3 bg-orange-900/40 border-l border-slate-700">L2: Guided</th>
-                                <th class="p-3 bg-amber-900/40 border-l border-slate-700">L3: Interactive</th>
-                                <th class="p-3 bg-blue-900/40 border-l border-slate-700">L4: Critical</th>
-                                <th class="p-3 bg-emerald-900/40 border-l border-slate-700">L5: Agency</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matrix-body" class="divide-y divide-slate-200">
-                            <!-- Matrix rows generated in JS -->
-                        </tbody>
-                    </table>
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <button onclick="clearForm()" class="px-5 py-2.5 rounded-lg text-slate-500 font-medium hover:bg-slate-100 transition-colors text-sm">
+                        Clear Form
+                    </button>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="saveObservation()" class="px-5 py-2.5 rounded-lg bg-emerald-100 text-emerald-700 font-bold hover:bg-emerald-200 transition-colors text-sm flex items-center shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save to History
+                        </button>
+                        <button onclick="copyToClipboard()" class="px-5 py-2.5 rounded-lg bg-indigo-100 text-indigo-700 font-bold hover:bg-indigo-200 transition-colors text-sm flex items-center shadow-sm">
+                            <i class="fa-solid fa-file-lines mr-2"></i>Copy for GDocs
+                        </button>
+                        <button onclick="downloadWordDoc()" class="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-colors text-sm shadow-md flex items-center">
+                            <i class="fa-solid fa-download mr-2"></i>Download .doc
+                        </button>
+                    </div>
                 </div>
             </div>
-        </section>
 
-    </main>
+            <!-- TAB 2: ANALYTICS & HISTORY -->
+            <div id="tab-analytics" class="tab-content space-y-6">
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <div class="bg-indigo-100 p-4 rounded-xl text-indigo-600">
+                            <i class="fa-solid fa-clipboard-list text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Total Observations</p>
+                            <p class="text-3xl font-black text-slate-800" id="stat-total">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <div class="bg-emerald-100 p-4 rounded-xl text-emerald-600">
+                            <i class="fa-solid fa-chart-pie text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Average Level</p>
+                            <p class="text-3xl font-black text-slate-800" id="stat-avg">0.0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider mb-2">Export Council Data</p>
+                            <div class="flex gap-2">
+                                <button onclick="exportCSV()" class="px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded hover:bg-slate-700 transition-colors">.CSV</button>
+                                <button onclick="exportJSON()" class="px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded hover:bg-slate-700 transition-colors">.JSON</button>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-file-export text-4xl text-slate-200"></i>
+                    </div>
+                </div>
 
-    <!-- JavaScript Application Logic -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navBtn = document.getElementById('nav-dropdown-btn');
-            const navMenu = document.getElementById('nav-dropdown-menu');
-            const navChevron = document.getElementById('nav-chevron');
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Chart -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-4">Level Distribution</h3>
+                        <div class="relative h-64 w-full">
+                            <canvas id="levelChart"></canvas>
+                        </div>
+                    </div>
 
-            function toggleMenu(forceState) {
-                if (!navMenu) return;
-                const shouldShow = forceState !== undefined ? forceState : navMenu.classList.contains('hidden');
-                if (shouldShow) {
-                    navMenu.classList.remove('hidden');
-                    if (navChevron) navChevron.style.transform = 'rotate(180deg)';
-                    if (navBtn) navBtn.setAttribute('aria-expanded', 'true');
-                } else {
-                    navMenu.classList.add('hidden');
-                    if (navChevron) navChevron.style.transform = 'rotate(0deg)';
-                    if (navBtn) navBtn.setAttribute('aria-expanded', 'false');
+                    <!-- History Table -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                        <h3 class="text-sm font-bold text-slate-800 mb-4">Recent Observations</h3>
+                        <div class="overflow-y-auto flex-1 h-64 border border-slate-100 rounded-lg">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
+                                <thead class="bg-slate-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold text-slate-600">Date</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-600">School/Subj</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-600">Level</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body" class="divide-y divide-slate-200 bg-white">
+                                    <!-- Populated via JS -->
+                                    <tr><td colspan="4" class="px-4 py-4 text-center text-slate-500">Loading history...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: RUBRIC REFERENCE -->
+            <div id="tab-rubric" class="tab-content space-y-6">
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-table-list text-indigo-500"></i> Classroom Observation Matrix
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">Reference matrix for integration depth, prompting fluency, and learner use.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="min-w-full text-sm text-left divide-y divide-slate-200">
+                            <thead class="bg-slate-50 text-slate-700">
+                                <tr>
+                                    <th class="px-4 py-4 font-bold border-r border-slate-200 w-1/5">Area of Focus</th>
+                                    <th class="px-4 py-4 font-semibold text-center border-r border-slate-200 bg-red-50/50 text-red-700 w-1/5">Level 1: Emerging</th>
+                                    <th class="px-4 py-4 font-semibold text-center border-r border-slate-200 bg-amber-50/50 text-amber-700 w-1/5">Level 2: Developing</th>
+                                    <th class="px-4 py-4 font-semibold text-center border-r border-slate-200 bg-emerald-50/50 text-emerald-700 w-1/5">Level 3: Proficient</th>
+                                    <th class="px-4 py-4 font-semibold text-center bg-indigo-50/50 text-indigo-700 w-1/5">Level 4: Exemplary</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white align-top">
+                                
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 font-bold text-slate-800 border-r border-slate-200">Gemini & Notebook Classroom Use</td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Uses Gemini and Notebook as standalone apps.</li>
+                                            <li>Understands how the 2 apps differ and when to use them.</li>
+                                        </ul>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Uses features within Google Classroom and uses a variety of Gemini features.</li>
+                                            <li>Recognises that the output requires follow up prompts.</li>
+                                        </ul>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Uses Gemini & Notebook across a variety of Workspace apps.</li>
+                                            <li>Embeds outputs into classroom tasks.</li>
+                                        </ul>
+                                    </td>
+                                    <td class="px-4 py-4 text-slate-600">
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Creates new, authentic, real world learning opportunities previously difficult to achieve.</li>
+                                            <li>Seamless integration to optimise workflows.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 font-bold text-slate-800 border-r border-slate-200">Learner Prompting</td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Low Prompt Control:</p>
+                                        <p>One-shot basic queries; struggles with generic output; limited refining or contextual guidance.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Basic Iteration:</p>
+                                        <p>Applies basic context (role, task); conducts 1-2 follow-up tweaks when initial output is off-target.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Structured Prompting:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Uses <b>PARTS</b> method (Persona, Act, Recipients, Theme, Structure).</li>
+                                            <li>Iterative prompt feedback. Recognises need for back-and-forth dialogue.</li>
+                                        </ul>
+                                    </td>
+                                    <td class="px-4 py-4 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Mastery & Sharing:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Designs reusable templates; teaches strategies to peers.</li>
+                                            <li>Self-directed prompting to create complex workflows.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 3 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 font-bold text-slate-800 border-r border-slate-200">Personalised Learning & Differentiation</td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Basic Content Prep:</p>
+                                        <p>Generates standard worksheets, quiz items, or basic lesson plan ideas without custom tailoring.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Some Customisation:</p>
+                                        <p>Some examples of customisation to suit learning needs. Learners have degree of choice. Basic output refinement.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Targeted Differentiation:</p>
+                                        <p>Re-levels texts for varied reading tiers; builds scaffolding, ELL & ASN support, and tailored learning materials.</p>
+                                    </td>
+                                    <td class="px-4 py-4 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Personalised Learning:</p>
+                                        <p>Creates dynamic, adaptive materials, multi-modal resources, and personalised feedback structures. Deepens independence.</p>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 4 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 font-bold text-slate-800 border-r border-slate-200">Learner AI Literacy Skills</td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Passive Consumption:</p>
+                                        <p>Students treat AI as a direct answer engine; limited critical check of facts or sources.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Guided Support:</p>
+                                        <p>Learners use AI for brainstorming or drafting with active step-by-step teacher supervision.</p>
+                                    </td>
+                                    <td class="px-4 py-4 border-r border-slate-200 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Critical Partner:</p>
+                                        <p>Learners use AI tools to outline, critique work, and check facts; understand data privacy & ethical use.</p>
+                                    </td>
+                                    <td class="px-4 py-4 text-slate-600">
+                                        <p class="font-semibold text-xs uppercase text-slate-400 mb-1">Mastery:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Use as an interactive study partner independently.</li>
+                                            <li>Ability to spot hallucinations and bias and challenge them.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Hidden area for formatting rich text to copy -->
+    <div id="copy-area" contenteditable="true"></div>
+    <!-- Custom Toast Message -->
+    <div id="toast">Message goes here</div>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Environment variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gemini-obs-tool';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        
+        let app, db, auth;
+        let currentUser = null;
+        let observationsData = []; // Local array to hold firestore data
+        let chartInstance = null;
+
+        // Initialize Firebase if config exists
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (token) {
+                signInWithCustomToken(auth, token).catch(e => console.error("Auth error", e));
+            } else {
+                signInAnonymously(auth).catch(e => console.error("Anon auth error", e));
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadObservationsFromCloud();
                 }
-            }
-
-            function switchTab(tabId) {
-                // Hide all main sections
-                document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-
-                // Show target section
-                const selectedTab = document.getElementById('tab-' + tabId);
-                if (selectedTab) selectedTab.classList.remove('hidden');
-
-                // Update nav title and icon
-                const titleEl = document.getElementById('nav-current-title');
-                const iconEl = document.getElementById('nav-current-icon');
-
-                if (tabId === 'observe') {
-                    if (titleEl) titleEl.textContent = 'New Observation';
-                    if (iconEl) iconEl.className = 'fa-solid fa-clipboard-check text-blue-400 text-sm';
-                } else if (tabId === 'history') {
-                    if (titleEl) titleEl.textContent = 'History & Analytics';
-                    if (iconEl) iconEl.className = 'fa-solid fa-chart-line text-indigo-400 text-sm';
-                    if (typeof renderHistoryTable === 'function') renderHistoryTable();
-                } else if (tabId === 'reference') {
-                    if (titleEl) titleEl.textContent = 'Rubric Reference';
-                    if (iconEl) iconEl.className = 'fa-solid fa-book-open text-teal-400 text-sm';
-                }
-
-                // Update active tab highlights
-                ['observe', 'history', 'reference'].forEach(id => {
-                    const itemBtn = document.getElementById('dropdown-item-' + id);
-                    const checkIcon = document.getElementById('check-' + id);
-                    if (id === tabId) {
-                        if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer';
-                        if (checkIcon) checkIcon.classList.remove('hidden');
-                    } else {
-                        if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer';
-                        if (checkIcon) checkIcon.classList.add('hidden');
-                    }
-                });
-            }
-
-            // Bind toggle button click with stopPropagation
-            if (navBtn) {
-                navBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    toggleMenu();
-                });
-            }
-
-            // Bind menu item buttons
-            document.querySelectorAll('[data-tab]').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const tabId = this.getAttribute('data-tab');
-                    switchTab(tabId);
-                    toggleMenu(false);
-                });
             });
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            // Fallback UI indication could go here
+        }
 
-            // Close when clicking outside wrapper
-            document.addEventListener('click', function(e) {
-                const wrapper = document.getElementById('nav-dropdown-wrapper');
-                if (wrapper && !wrapper.contains(e.target)) {
-                    toggleMenu(false);
-                }
-            });
-
-            // Close on Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    toggleMenu(false);
-                }
-            });
-
-            // Expose fallback window functions
-            window.toggleNavDropdown = toggleMenu;
-            window.selectTabFromDropdown = switchTab;
-        });
-
-        const RUBRIC_DATA = [
-            {
-                id: 'agency',
-                title: 'Pupil Role, Agency & Prompting Fluency',
-                levels: [
-                    { level: 1, name: 'Passive / One-Shot Query', desc: 'Single-shot basic queries with low prompt control; struggles with generic output; limited refining or contextual guidance.' },
-                    { level: 2, name: 'Guided / Basic Iteration', desc: 'Applies basic context (role, task) using teacher templates; conducts 1-2 follow-up tweaks when initial output is off-target.' },
-                    { level: 3, name: 'Structured Prompting (PARTS)', desc: 'Uses Persona, Act, Recipients, Theme & Structure method. Recognises need for follow-up prompts with back-and-forth dialogue to refine output.' },
-                    { level: 4, name: 'Critical Evaluator & Self-Directed', desc: 'Intentionally tests, verifies, and audits Gemini output. Uses self-directed prompting to create complex workflows and evaluates bias/accuracy.' },
-                    { level: 5, name: 'Mastery & Peer Sharing', desc: 'Designs reusable prompt templates, teaches strategies to peer learners, and autonomously orchestrates complex AI-driven workflows.' }
-                ]
-            },
-            {
-                id: 'blooms',
-                title: 'Personalised Learning & Differentiation (CfE)',
-                levels: [
-                    { level: 1, name: 'Basic Content Prep', desc: 'Generates standard worksheets, quiz items, or basic fact extractions without custom tailoring or learner adaptation.' },
-                    { level: 2, name: 'Some Customisation', desc: 'Basic refinement of output to suit learning needs; learners have a basic degree of choice when using Gemini tools.' },
-                    { level: 3, name: 'Targeted Scaffolding (ASN/ELL)', desc: 'Re-levels complex texts for reading tiers; builds scaffolds, ASN (Additional Support Needs) & ELL support, and tailored study materials.' },
-                    { level: 4, name: 'Personalised Feedback & Depth', desc: 'Creates dynamic, adaptive learning materials, multi-modal resources, and personalised feedback structures to deepen independent understanding.' },
-                    { level: 5, name: 'Adaptive Co-Creation', desc: 'Pupils independently curate personalized learning pathways and co-create multi-modal study systems tailored to their individual needs.' }
-                ]
-            },
-            {
-                id: 'samr',
-                title: 'SAMR & Gemini/Notebook Workspace Use',
-                levels: [
-                    { level: 1, name: 'Basic Standalone Use (Substitution)', desc: 'Uses Gemini and NotebookLM as standalone search engine or spellcheck replacements with no functional task change.' },
-                    { level: 2, name: 'Basic Integration (Augmentation)', desc: 'Uses Gemini and Notebook features within Google Classroom; recognizes output requires follow-up prompts for task enhancement.' },
-                    { level: 3, name: 'Fluent Integration (Modification)', desc: 'Uses Gemini & NotebookLM fluently across Workspace apps; embeds AI outputs into redesigned interactive classroom tasks.' },
-                    { level: 4, name: 'Authentic Real-World Tasks (Redefinition)', desc: 'Creates new, authentic, real-world learning opportunities previously difficult to achieve without tools; optimizes time-saving workflows.' },
-                    { level: 5, name: 'Transformative Workflow Mastery', desc: 'Learners seamlessly orchestrate AI tools across Workspace to lead authentic projects with real-world impact and peer support systems.' }
-                ]
-            },
-            {
-                id: 'tpack',
-                title: 'TPACK Synergy & Tool Selection',
-                levels: [
-                    { level: 1, name: 'TK (Tech Knowledge)', desc: 'Basic awareness of typing into a prompt box without considering pedagogical intent or tool selection.' },
-                    { level: 2, name: 'TCK (Tech + Content)', desc: 'Using technology to access specific curriculum content faster or reformat notes into basic tables.' },
-                    { level: 3, name: 'TPK (Tech + Pedagogy)', desc: 'Using Gemini & Notebooks as pedagogical tools for scaffolding, study support, and interactive practice.' },
-                    { level: 4, name: 'TPACK Integrated', desc: 'Understanding how AI shapes content presentation and using critical pedagogical judgment during learning tasks.' },
-                    { level: 5, name: 'TPACK Mastered', desc: 'Pupils autonomously select when AI adds genuine value (e.g. synthesis, coding, drafting) and when human-only methods are superior.' }
-                ]
-            },
-            {
-                id: 'ethics',
-                title: 'Ethical Literacy & Spotting Bias/Hallucinations',
-                levels: [
-                    { level: 1, name: 'Passive Consumption', desc: 'Treats AI as a direct answer engine; accepts all output as absolute truth with limited critical check of facts or sources.' },
-                    { level: 2, name: 'Guided Supervision', desc: 'Learners use AI for brainstorming or drafting with active step-by-step teacher supervision; basic awareness of AI errors.' },
-                    { level: 3, name: 'Critical Partner & Privacy', desc: 'Learners use AI to outline, critique work, and check facts; understand data privacy rules and ethical use standards.' },
-                    { level: 4, name: 'Spotting Bias & Hallucinations', desc: 'Actively spots hallucinations, subtle bias, tone errors, and invalid citations, challenging output when appropriate.' },
-                    { level: 5, name: 'Ethical Driver & Attribution', desc: 'Demonstrates full integrity in attribution, transparent AI usage declarations, and responsible digital citizenship.' }
-                ]
-            }
-        ];
-
-        const LEVEL_NAMES = [
-            'Level 1: Emerging / Passive Use',
-            'Level 2: Developing / Guided Integration',
-            'Level 3: Proficient / Structured Partner',
-            'Level 4: Exemplary / Authentic Inquiry',
-            'Level 5: Transformative / Pupil Agency'
-        ];
-
-        const COACHING_PROMPTS = {
-            1: "<strong>To move from L1 to L2:</strong> How can we shift pupils from treat AI as a direct answer engine to using basic context (Role, Task) and conducting 1–2 follow-up tweaks?",
-            2: "<strong>To move from L2 to L3:</strong> How can we embed structured prompting (PARTS: Persona, Act, Recipients, Theme, Structure) and use Gemini/NotebookLM to build ASN & ELL text scaffolding?",
-            3: "<strong>To move from L3 to L4:</strong> How can we support learners to use Gemini & NotebookLM to create authentic, real-world learning opportunities while actively spotting hallucinations and bias?",
-            4: "<strong>To move from L4 to L5:</strong> How can pupils design reusable prompt templates and share time-saving AI workflows to mentor peers across the school?"
+        // --- GLOBAL STATE FOR CURRENT FORM ---
+        window.currentData = {
+            dimensions: { dim1: null, dim2: null, dim3: null, dim4: null, dim5: null },
+            dimensionLabels: { dim1: '', dim2: '', dim3: '', dim4: '', dim5: '' },
+            rapidAvg: 0,
+            overallLevel: 0
         };
 
-        // State variables
-<!-- ... existing code -->
+        // --- UI LOGIC ---
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            
+            const btnObserve = document.getElementById('tab-btn-observe');
+            const btnAnalytics = document.getElementById('tab-btn-analytics');
+            const btnRubric = document.getElementById('tab-btn-rubric');
+            
+            const activeClass = "flex-1 md:flex-none inline-flex items-center justify-center whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all duration-200 bg-indigo-500 text-white shadow-md shadow-indigo-500/20";
+            const inactiveClass = "flex-1 md:flex-none inline-flex items-center justify-center whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50";
+
+            // Reset all
+            btnObserve.className = inactiveClass;
+            btnAnalytics.className = inactiveClass;
+            btnRubric.className = inactiveClass;
+
+            if (tab === 'observe') {
+                btnObserve.className = activeClass;
+            } else if (tab === 'analytics') {
+                btnAnalytics.className = activeClass;
+                updateAnalyticsUI(); // Refresh charts when switching to analytics
+            } else if (tab === 'rubric') {
+                btnRubric.className = activeClass;
+            }
+        };
+
+        // Default date
+        document.getElementById('date-input').valueAsDate = new Date();
+
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.backgroundColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#3b82f6');
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        };
+
+        window.setDimension = function(dimKey, value, label) {
+            window.currentData.dimensions[dimKey] = value;
+            window.currentData.dimensionLabels[dimKey] = label;
+            
+            // UI Update
+            const container = document.getElementById('grid-' + dimKey);
+            container.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('selected');
+                if(parseInt(btn.innerText) === value) btn.classList.add('selected');
+            });
+            document.getElementById('desc-' + dimKey).innerText = label;
+
+            window.calculateLevels();
+        };
+
+        window.calculateLevels = function() {
+            // Calculate Rapid Checklist Avg
+            let rapidTotal = 0;
+            let rapidCount = 0;
+            ['rapid-q1', 'rapid-q2', 'rapid-q3'].forEach(name => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`);
+                if (checked) {
+                    rapidTotal += parseInt(checked.value);
+                    rapidCount++;
+                }
+            });
+            window.currentData.rapidAvg = rapidCount > 0 ? (rapidTotal / rapidCount) : 0;
+
+            // Calculate Detailed Dimensions Avg
+            let dimTotal = 0;
+            let dimCount = 0;
+            Object.values(window.currentData.dimensions).forEach(val => {
+                if (val !== null) {
+                    dimTotal += val;
+                    dimCount++;
+                }
+            });
+            const dimAvg = dimCount > 0 ? (dimTotal / dimCount) : 0;
+
+            // Overall Level Priority: Dimensions > Rapid Checklist
+            let overallCalc = dimCount > 0 ? dimAvg : window.currentData.rapidAvg;
+            window.currentData.overallLevel = overallCalc > 0 ? Math.round(overallCalc) : 0;
+
+            updateCoachingPrompts();
+        };
+
+        window.updateCoachingPrompts = function() {
+            const levelDisplay = document.getElementById('overall-level-display');
+            const promptsContainer = document.getElementById('coaching-prompts-container');
+            const lvl = window.currentData.overallLevel;
+
+            if (lvl === 0) {
+                levelDisplay.innerText = "L--";
+                promptsContainer.innerHTML = `<p class="text-slate-400 italic text-center mt-8">Select criteria to generate tailored post-observation questions.</p>`;
+                return;
+            }
+
+            levelDisplay.innerText = `Level ${lvl}`;
+            
+            const prompts = {
+                1: [
+                    "How might we move from passive viewing to having pupils try a basic prompt themselves?",
+                    "What small part of this lesson could be handed over to the pupils to explore using the tool?",
+                    "Are pupils aware of what is happening, or is the technology completely hidden from them?"
+                ],
+                2: [
+                    "Could we encourage pupils to ask follow-up questions to the AI's first response?",
+                    "How can we ensure pupils aren't just copying outputs, but actually reading and engaging with them?",
+                    "What traditional task is this replacing, and is it faster or more effective this way?"
+                ],
+                3: [
+                    "How can we structure the task so pupils *must* evaluate the AI output against a known rubric or success criteria?",
+                    "Are pupils sharing their successful prompts with peers to build collective AI literacy?",
+                    "How has this functional improvement changed the pace or depth of the lesson?"
+                ],
+                4: [
+                    "What would happen if pupils designed the prompt/persona for their peers to interact with?",
+                    "How are pupils fact-checking the outputs? What external sources are they referencing?",
+                    "Could this task be accomplished without AI? How has the core task been fundamentally redesigned?"
+                ],
+                5: [
+                    "How can we share this transformative, pupil-led practice with other departments?",
+                    "In what ways are pupils demonstrating ethical awareness of the AI's limitations in this complex task?",
+                    "How are pupils using the tool to create something entirely new that impacts an audience beyond this classroom?"
+                ]
+            };
+
+            let html = `<ul class="list-disc pl-5 space-y-2">`;
+            prompts[lvl].forEach(p => {
+                html += `<li>${p}</li>`;
+            });
+            html += `</ul>`;
+            promptsContainer.innerHTML = html;
+        };
+
+        window.clearForm = function() {
+            document.getElementById('la-input').value = '';
+            document.getElementById('school-input').value = '';
+            document.getElementById('subject-input').value = '';
+            document.getElementById('level-input').value = '';
+            document.getElementById('date-input').valueAsDate = new Date();
+            document.getElementById('comments-input').value = '';
+            document.getElementById('prompts-input').value = '';
+            
+            // Clear radios
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            
+            // Clear dimensions
+            Object.keys(window.currentData.dimensions).forEach(key => {
+                window.currentData.dimensions[key] = null;
+                window.currentData.dimensionLabels[key] = '';
+                document.getElementById('desc-' + key).innerText = 'Select a score';
+                document.getElementById('grid-' + key).querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            });
+            
+            window.calculateLevels();
+            showToast("Form reset successfully", "info");
+        };
+
+        
+        // Save to Firebase securely
+        window.saveObservation = async function() {
+            if (!currentUser) {
+                showToast("Cannot save: Not authenticated.", "error");
+                return;
+            }
+            if (window.currentData.overallLevel === 0) {
+                showToast("Please complete at least some rubric scoring to save.", "error");
+                return;
+            }
+
+            const data = {
+                timestamp: Date.now(),
+                date: document.getElementById('date-input').value,
+                localAuthority: document.getElementById('la-input').value || 'Unspecified',
+                school: document.getElementById('school-input').value || 'Unspecified',
+                subject: document.getElementById('subject-input').value || 'Unspecified',
+                levelYear: document.getElementById('level-input').value || 'Unspecified',
+                overallLevel: window.currentData.overallLevel,
+                dimensions: window.currentData.dimensions,
+                notes: document.getElementById('comments-input').value,
+                prompts: document.getElementById('prompts-input').value
+            };
+
+            try {
+                // Rule 1: Strict Paths
+                const colRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'observations');
+                await addDoc(colRef, data);
+                showToast("Observation saved to History!");
+                // Don't clear form automatically, let user decide.
+            } catch (error) {
+                console.error("Error saving doc: ", error);
+                showToast("Failed to save observation.", "error");
+            }
+        };
+
+        // Load from Firebase
+        function loadObservationsFromCloud() {
+            if (!currentUser) return;
+            
+            const colRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'observations');
+            // Rule 2: Simple query, sort in JS if needed. Firestore sometimes errors on orderBy without indexes.
+            const q = query(colRef);
+
+            onSnapshot(q, (snapshot) => {
+                observationsData = [];
+                snapshot.forEach((doc) => {
+                    observationsData.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort descending by timestamp in memory
+                observationsData.sort((a, b) => b.timestamp - a.timestamp);
+                
+                if(document.getElementById('tab-analytics').classList.contains('active')) {
+                    updateAnalyticsUI();
+                }
+            }, (error) => {
+                console.error("Error fetching observations:", error);
+                document.getElementById('history-table-body').innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-red-500">Error loading data.</td></tr>`;
+            });
+        }
+
+        window.deleteObservation = async function(id) {
+            if(!currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'observations', id));
+                showToast("Observation deleted.");
+            } catch(e) {
+                console.error("Error deleting", e);
+                showToast("Error deleting", "error");
+            }
+        }
+
+        function updateAnalyticsUI() {
+            const tbody = document.getElementById('history-table-body');
+            const totalEl = document.getElementById('stat-total');
+            const avgEl = document.getElementById('stat-avg');
+            
+            if (observationsData.length === 0) {
+                totalEl.innerText = "0";
+                avgEl.innerText = "0.0";
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500 italic">No observations saved yet.</td></tr>`;
+                updateChart([]);
+                return;
+            }
+
+            totalEl.innerText = observationsData.length;
+            
+            let sumLevels = 0;
+            let levelCounts = {1:0, 2:0, 3:0, 4:0, 5:0};
+
+            let tableHTML = '';
+            observationsData.forEach(obs => {
+                sumLevels += obs.overallLevel;
+                if(levelCounts[obs.overallLevel] !== undefined) levelCounts[obs.overallLevel]++;
+                
+                tableHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 whitespace-nowrap">${obs.date}</td>
+                        <td class="px-4 py-3 truncate max-w-[150px]"><b>${obs.school}</b><br><span class="text-xs text-slate-500">${obs.localAuthority || 'No LA'} &bull; ${obs.subject}</span></td>
+                        <td class="px-4 py-3"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold">L${obs.overallLevel}</span></td>
+                        <td class="px-4 py-3 text-right">
+                            <button onclick="deleteObservation('${obs.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            avgEl.innerText = (sumLevels / observationsData.length).toFixed(1);
+            tbody.innerHTML = tableHTML;
+            updateChart([levelCounts[1], levelCounts[2], levelCounts[3], levelCounts[4], levelCounts[5]]);
+        }
+
+        function updateChart(dataArray) {
+            const ctx = document.getElementById('levelChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'],
+                    datasets: [{
+                        label: 'Number of Observations',
+                        data: dataArray,
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // CSV/JSON EXPORT (From memory)
+        window.exportCSV = function() {
+            if(observationsData.length === 0) return showToast("No data to export", "error");
+            const headers = ["Date", "Local Authority", "School", "Subject", "Level/Year", "Overall Level", "Dim1", "Dim2", "Dim3", "Dim4", "Dim5", "Notes", "Notable Prompts"];
+            const rows = observationsData.map(o => [
+                o.date, `"${o.localAuthority || 'Unspecified'}"`, `"${o.school}"`, `"${o.subject}"`, `"${o.levelYear}"`, o.overallLevel,
+                o.dimensions.dim1||'', o.dimensions.dim2||'', o.dimensions.dim3||'', o.dimensions.dim4||'', o.dimensions.dim5||'',
+                `"${(o.notes||'').replace(/"/g, '""')}"`, `"${(o.prompts||'').replace(/"/g, '""')}"`
+            ]);
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+            downloadString(csvContent, "Observation_Export.csv");
+        };
+
+        window.exportJSON = function() {
+            if(observationsData.length === 0) return showToast("No data to export", "error");
+            const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(observationsData, null, 2));
+            downloadString(jsonStr, "Observation_Export.json");
+        };
+
+        function downloadString(data, filename) {
+            const encodedUri = encodeURI(data);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generateRichTextHTML() {
+            const la = document.getElementById('la-input').value || "Not Specified";
+            const school = document.getElementById('school-input').value || "Not Specified";
+            const subject = document.getElementById('subject-input').value || "Not Specified";
+            const level = document.getElementById('level-input').value || "Not Specified";
+            const date = document.getElementById('date-input').value || "Not Specified";
+            const comments = document.getElementById('comments-input').value || "No additional notes provided.";
+            const prompts = document.getElementById('prompts-input').value || "No notable prompts recorded.";
+            const ovrLvl = window.currentData.overallLevel;
+            
+            // Generate table rows for dimensions safely
+            const dimRows = [
+                {n: "1. Pupil Role & Agency", v: window.currentData.dimensions.dim1, l: window.currentData.dimensionLabels.dim1},
+                {n: "2. Cognitive Depth", v: window.currentData.dimensions.dim2, l: window.currentData.dimensionLabels.dim2},
+                {n: "3. SAMR Focus", v: window.currentData.dimensions.dim3, l: window.currentData.dimensionLabels.dim3},
+                {n: "4. TPACK Synergy", v: window.currentData.dimensions.dim4, l: window.currentData.dimensionLabels.dim4},
+                {n: "5. Ethical Literacy", v: window.currentData.dimensions.dim5, l: window.currentData.dimensionLabels.dim5},
+            ].map(d => {
+                return `
+                <tr>
+                    <td style="border: 1px solid #d1d5db; padding: 8px;">${d.n}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; font-weight: bold;">${d.v ? d.v : '-'}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; font-style: italic; color: #4b5563;">${d.l ? d.l : 'Not observed'}</td>
+                </tr>`;
+            }).join('');
+
+            // Extract coaching prompts from DOM
+            const promptContainer = document.getElementById('coaching-prompts-container');
+            const promptsHTML = promptContainer.innerHTML;
+
+            return `
+                <div style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.6;">
+                    <h1 style="color: #4f46e5; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">Pupil AI Experience Observation</h1>
+                    
+                    <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+                        <h2 style="color: #334155; margin-top: 0; font-size: 16px;">Observation Context</h2>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>Local Authority:</strong> ${la}</li>
+                            <li><strong>School:</strong> ${school}</li>
+                            <li><strong>Subject:</strong> ${subject}</li>
+                            <li><strong>Year/Level:</strong> ${level}</li>
+                            <li><strong>Date:</strong> ${date}</li>
+                        </ul>
+                    </div>
+
+                    <h2 style="color: #334155; margin-top: 25px;">Overall Integration Level</h2>
+                    <p style="font-size: 24px; font-weight: bold; color: #fff; background-color: #4f46e5; display: inline-block; padding: 5px 15px; border-radius: 5px;">
+                        Level ${ovrLvl > 0 ? ovrLvl : 'Not Calculated'}
+                    </p>
+
+                    <h2 style="color: #334155; margin-top: 25px;">Dimension Breakdown</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead style="background-color: #f1f5f9;">
+                            <tr>
+                                <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Dimension</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">Score (1-5)</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Descriptor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${dimRows}
+                        </tbody>
+                    </table>
+
+                    <h2 style="color: #334155; margin-top: 25px;">Observation Notes</h2>
+                    <p style="white-space: pre-wrap; padding: 10px; border-left: 4px solid #10b981; background-color: #ecfdf5;">${comments}</p>
+
+                    <h2 style="color: #334155; margin-top: 25px;">Notable Pupil Prompts</h2>
+                    <p style="white-space: pre-wrap; padding: 10px; border-left: 4px solid #3b82f6; background-color: #eff6ff; font-family: monospace;">${prompts}</p>
+
+                    <h2 style="color: #334155; margin-top: 25px;">Suggested Coaching Prompts</h2>
+                    <div style="background-color: #eef2ff; padding: 15px; border-radius: 8px; border: 1px solid #c7d2fe;">
+                        ${promptsHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.copyToClipboard = function() {
+            if (window.currentData.overallLevel === 0 && !document.getElementById('comments-input').value) {
+                showToast("Please fill out some data before copying.", "error");
+                return;
+            }
+
+            const htmlContent = generateRichTextHTML();
+            const copyArea = document.getElementById('copy-area');
+            copyArea.innerHTML = htmlContent;
+
+            const range = document.createRange();
+            range.selectNodeContents(copyArea);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("Copied! Ready to paste directly into Google Docs.");
+                } else {
+                    showToast("Failed to copy. Try downloading instead.", "error");
+                }
+            } catch (err) {
+                showToast("Browser doesn't support copy command.", "error");
+            }
+            selection.removeAllRanges();
+            copyArea.innerHTML = '';
+        };
+
+        window.downloadWordDoc = function() {
+            if (window.currentData.overallLevel === 0 && !document.getElementById('comments-input').value) {
+                showToast("Please fill out some data before downloading.", "error");
+                return;
+            }
+
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Observation Report</title></head><body>";
+            const footer = "</body></html>";
+            const htmlContent = header + generateRichTextHTML() + footer;
+            
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const dateStr = document.getElementById('date-input').value || 'Report';
+            const teacherStr = (document.getElementById('subject-input').value || 'Observation').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            link.download = `Gemini_${teacherStr}_${dateStr}.doc`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast("Report downloaded successfully.");
+        };
+
+        // Initialize UI defaults
+        window.calculateLevels();
+    </script>
+</body>
+</html>
