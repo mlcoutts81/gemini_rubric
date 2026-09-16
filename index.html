@@ -549,7 +549,84 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Data Structure for the Rubric (Merged with Gemini for Learners Framework)
+        // Explicitly attach dropdown handlers to window for global inline accessibility
+        window.toggleNavDropdown = function() {
+            const menu = document.getElementById('nav-dropdown-menu');
+            const chevron = document.getElementById('nav-chevron');
+            const btn = document.getElementById('nav-dropdown-btn');
+            if (!menu) return;
+            
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                if (btn) btn.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        window.selectTabFromDropdown = function(tabId) {
+            // Hide all main section tabs
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Show selected section tab
+            const selectedTab = document.getElementById('tab-' + tabId);
+            if (selectedTab) selectedTab.classList.remove('hidden');
+
+            // Update dropdown button text & icon
+            const titleEl = document.getElementById('nav-current-title');
+            const iconEl = document.getElementById('nav-current-icon');
+            
+            if (tabId === 'observe') {
+                if (titleEl) titleEl.textContent = 'New Observation';
+                if (iconEl) iconEl.className = 'fa-solid fa-clipboard-check text-blue-400 text-sm';
+            } else if (tabId === 'history') {
+                if (titleEl) titleEl.textContent = 'History & Analytics';
+                if (iconEl) iconEl.className = 'fa-solid fa-chart-line text-indigo-400 text-sm';
+                if (typeof renderHistoryTable === 'function') renderHistoryTable();
+            } else if (tabId === 'reference') {
+                if (titleEl) titleEl.textContent = 'Rubric Reference';
+                if (iconEl) iconEl.className = 'fa-solid fa-book-open text-teal-400 text-sm';
+            }
+
+            // Update item highlights & checkmarks
+            ['observe', 'history', 'reference'].forEach(id => {
+                const itemBtn = document.getElementById('dropdown-item-' + id);
+                const checkIcon = document.getElementById('check-' + id);
+                if (id === tabId) {
+                    if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer';
+                    if (checkIcon) checkIcon.classList.remove('hidden');
+                } else {
+                    if (itemBtn) itemBtn.className = 'w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer';
+                    if (checkIcon) checkIcon.classList.add('hidden');
+                }
+            });
+
+            // Close menu
+            const menu = document.getElementById('nav-dropdown-menu');
+            if (menu) menu.classList.add('hidden');
+            const chevron = document.getElementById('nav-chevron');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+            const btn = document.getElementById('nav-dropdown-btn');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const wrapper = document.getElementById('nav-dropdown-wrapper');
+            const menu = document.getElementById('nav-dropdown-menu');
+            if (wrapper && !wrapper.contains(event.target) && menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                const chevron = document.getElementById('nav-chevron');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                const btn = document.getElementById('nav-dropdown-btn');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
         const RUBRIC_DATA = [
             {
                 id: 'agency',
