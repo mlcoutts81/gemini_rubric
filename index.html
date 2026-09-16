@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Pupil Experience Observation Tool</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        scotblue: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0065bf',
+                            600: '#0052a3',
+                            700: '#003e80',
+                            800: '#002b5c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-800/80 backdrop-blur-md bg-slate-900/95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+            <div class="flex flex-row items-center justify-between gap-3 sm:gap-4">
+                
+                <!-- Logo & Title Area -->
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-teal-400 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg shadow-blue-900/30 shrink-0">
+                        <i class="fa-solid fa-sparkles"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center flex-wrap gap-2">
+                            <h1 class="font-bold text-base sm:text-lg md:text-xl tracking-tight leading-snug text-white">
+                                Gemini Pupil Experience Observer
+                            </h1>
+                            <span class="text-[10px] sm:text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                CfE & SAMR
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal truncate mt-0.5">
+                            EdTech Observation & Coaching Tool for Scottish Schools
+                        </p>
+                    </div>
+                </div>
+
+                <div class="relative shrink-0" id="nav-dropdown-wrapper">
+                    <button id="nav-dropdown-btn" onclick="toggleNavDropdown()" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-white border border-slate-700/80 shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-scotblue-500 cursor-pointer">
+                        <i id="nav-current-icon" class="fa-solid fa-clipboard-check text-blue-400 text-sm"></i>
+                        <span id="nav-current-title" class="font-semibold text-xs sm:text-sm">New Observation</span>
+                        <i id="nav-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs ml-1 transition-transform duration-200"></i>
+                    </button>
+
+                    <!-- Dropdown Menu items -->
+                    <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-60 sm:w-64 rounded-2xl bg-slate-800/95 border border-slate-700/90 shadow-2xl z-50 py-2 divide-y divide-slate-700/50 backdrop-blur-xl">
+                        <div class="py-1">
+                            <button onclick="selectTabFromDropdown('observe')" id="dropdown-item-observe" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-white bg-slate-700/60 transition group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                        <i class="fa-solid fa-clipboard-check"></i>
+                                    </div>
+                                    <span class="font-semibold">New Observation</span>
+                                </div>
+                                <i class="fa-solid fa-check text-blue-400 text-xs check-indicator" id="check-observe"></i>
+                            </button>
+                            <button onclick="selectTabFromDropdown('history')" id="dropdown-item-history" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                    </div>
+                                    <span class="font-medium">History & Analytics</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span id="saved-count" class="px-2 py-0.5 bg-slate-700 text-blue-300 rounded-full text-[10px] font-bold border border-slate-600">0</span>
+                                    <i class="fa-solid fa-check text-blue-400 text-xs check-indicator hidden" id="check-history"></i>
+                                </div>
+                            </button>
+                            <button onclick="selectTabFromDropdown('reference')" id="dropdown-item-reference" class="w-full flex items-center justify-between px-4 py-2.5 text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition">
+                                        <i class="fa-solid fa-book-open"></i>
+                                    </div>
+                                    <span class="font-medium">Rubric Reference</span>
+                                </div>
+                                <i class="fa-solid fa-check text-blue-400 text-xs check-indicator hidden" id="check-reference"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- TAB 1: NEW OBSERVATION VIEW -->
+        <section id="tab-observe" class="space-y-6">
+            
+            <!-- Metadata Form Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6 transition-all">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
+                        <i class="fa-solid fa-sliders text-scotblue-500"></i>
+                        <span>1. Session Context & Anonymous Metadata</span>
+                    </div>
+                    <span class="text-xs text-slate-400 italic"><i class="fa-solid fa-user-shield text-teal-600"></i> Anonymous Data Collection</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Local Authority / Council</label>
+                        <select id="meta-la" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
+                            <option value="Anonymous Authority">Anonymous / Select LA...</option>
+                            <option value="Aberdeen City">Aberdeen City Council</option>
+                            <option value="Aberdeenshire">Aberdeenshire Council</option>
+                            <option value="Angus">Angus Council</option>
+                            <option value="Argyll and Bute">Argyll and Bute Council</option>
+                            <option value="City of Edinburgh">City of Edinburgh Council</option>
+                            <option value="Clackmannanshire">Clackmannanshire Council</option>
+                            <option value="Dumfries and Galloway">Dumfries and Galloway Council</option>
+                            <option value="Dundee City">Dundee City Council</option>
+                            <option value="East Ayrshire">East Ayrshire Council</option>
+                            <option value="East Dunbartonshire">East Dunbartonshire Council</option>
+                            <option value="East Lothian">East Lothian Council</option>
+                            <option value="East Renfrewshire">East Renfrewshire Council</option>
+                            <option value="Falkirk">Falkirk Council</option>
+                            <option value="Fife">Fife Council</option>
+                            <option value="Glasgow City">Glasgow City Council</option>
+                            <option value="Highland">Highland Council</option>
+                            <option value="Inverclyde">Inverclyde Council</option>
+                            <option value="Midlothian">Midlothian Council</option>
+                            <option value="Moray">Moray Council</option>
+                            <option value="Na h-Eileanan Siar">Na h-Eileanan Siar (Western Isles)</option>
+                            <option value="North Ayrshire">North Ayrshire Council</option>
+                            <option value="North Lanarkshire">North Lanarkshire Council</option>
+                            <option value="Orkney Islands">Orkney Islands Council</option>
+                            <option value="Perth and Kinross">Perth and Kinross Council</option>
+                            <option value="Renfrewshire">Renfrewshire Council</option>
+                            <option value="Scottish Borders">Scottish Borders Council</option>
+                            <option value="Shetland Islands">Shetland Islands Council</option>
+                            <option value="South Ayrshire">South Ayrshire Council</option>
+                            <option value="South Lanarkshire">South Lanarkshire Council</option>
+                            <option value="Stirling">Stirling Council</option>
+                            <option value="West Dunbartonshire">West Dunbartonshire Council</option>
+                            <option value="West Lothian">West Lothian Council</option>
+                            <option value="Other / Independent">Other / Independent / Grant-Maintained</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Stage / Class Level</label>
+                        <select id="meta-stage" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
+                            <option value="Unspecified Stage">Select Stage...</option>
+                            <option value="Early / P1-P3">Early Stage (P1-P3)</option>
+                            <option value="Primary / P4-P7">First / Second Stage (P4-P7)</option>
+                            <option value="Secondary / BGE (S1-S3)">BGE Secondary (S1-S3)</option>
+                            <option value="Secondary / Senior Phase (S4-S6)">Senior Phase (S4-S6)</option>
+                            <option value="ASN / Specialist Provision">ASN / Specialist Provision</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Subject / Curriculum Area</label>
+                        <input type="text" id="meta-subject" placeholder="e.g. Science, Modern Languages, BGE Literacy" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Observation Date & Time</label>
+                        <input type="datetime-local" id="meta-datetime" class="w-full rounded-xl border-slate-300 bg-slate-50 border p-2.5 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5-Minute Rapid Glance Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
+                            <i class="fa-solid fa-stopwatch text-amber-500"></i>
+                            <span>2. Rapid Observation Checklist (5-Minute Classroom Glance)</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Quickly tap the behaviors you notice during your initial walkthrough.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Check 1 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-keyboard mr-1"></i> What are pupils typing?</span>
+                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-typing" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Static query:</strong> e.g., <em>"What is photosynthesis?"</em> (L1–2)</span>
+                                </label>
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-typing" value="3" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Iterative / Context prompt:</strong> e.g., <em>"Explain to a 7yr old using a cooking analogy..."</em> (L3–4)</span>
+                                </label>
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-typing" value="5" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Strategic workflow:</strong> e.g., coding, critiquing draft essays, or debugging logic (L4–5)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Check 2 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-copy mr-1"></i> What are pupils doing with output?</span>
+                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-output" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Copy & Paste:</strong> Directly pasting output without editing (L1)</span>
+                                </label>
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-output" value="3" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Read & Paraphrase:</strong> Putting output into their own words (L2–3)</span>
+                                </label>
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-output" value="5" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Question & Fact-Check:</strong> Verifying facts, finding hallucinations, re-prompting (L4–5)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Check 3 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider block mb-1"><i class="fa-solid fa-bullseye mr-1"></i> Where is pupil focus?</span>
+                            <div class="space-y-2 mt-2 text-xs sm:text-sm">
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-focus" value="1" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Finding answers:</strong> Focused solely on getting answers from screen (L1–2)</span>
+                                </label>
+                                <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition border border-transparent hover:border-slate-200">
+                                    <input type="radio" name="check-focus" value="4" onchange="autoSuggestLevels()" class="mt-0.5 text-scotblue-600 focus:ring-scotblue-500">
+                                    <span><strong>Sounding board:</strong> Using Gemini to test and deepen their own thinking (L3–5)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 Rubric Dimensions Interactive Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-3 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg">
+                            <i class="fa-solid fa-layer-group text-scotblue-500"></i>
+                            <span>3. Assessment Across 5 Core Dimensions</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">Select the observed level (1 to 5) for each rubric dimension.</p>
+                    </div>
+                    <!-- Overall Score Badge -->
+                    <div class="flex items-center gap-3 bg-slate-100 p-2.5 rounded-xl border border-slate-200 self-start sm:self-auto">
+                        <span class="text-xs font-medium text-slate-600">Calculated Profile:</span>
+                        <span id="calculated-badge" class="px-3 py-1 bg-scotblue-600 text-white text-xs font-bold rounded-lg shadow-sm">Level 1: Passive Use</span>
+                    </div>
+                </div>
+
+                <!-- Dimension 1 -->
+                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-0">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 1</span>
+                            <h3 class="font-bold text-slate-800 text-base">Pupil Role & Agency</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-0">
+                            <!-- Level selector buttons auto generated or styled -->
+                            <button onclick="setDimensionLevel(0, 1)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Passive</button>
+                            <button onclick="setDimensionLevel(0, 2)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Guided</button>
+                            <button onclick="setDimensionLevel(0, 3)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Interactive</button>
+                            <button onclick="setDimensionLevel(0, 4)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Critical</button>
+                            <button onclick="setDimensionLevel(0, 5)" class="lvl-btn-0 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Agency</button>
+                        </div>
+                    </div>
+                    <div id="dim-desc-0" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
+                        <!-- Description auto-populates via JS -->
+                    </div>
+                </div>
+
+                <!-- Dimension 2 -->
+                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-1">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 2</span>
+                            <h3 class="font-bold text-slate-800 text-base">Cognitive Depth (Bloom's Taxonomy / CfE)</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-1">
+                            <button onclick="setDimensionLevel(1, 1)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Remember</button>
+                            <button onclick="setDimensionLevel(1, 2)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Understand</button>
+                            <button onclick="setDimensionLevel(1, 3)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Analyze</button>
+                            <button onclick="setDimensionLevel(1, 4)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Evaluate</button>
+                            <button onclick="setDimensionLevel(1, 5)" class="lvl-btn-1 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Create</button>
+                        </div>
+                    </div>
+                    <div id="dim-desc-1" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <!-- Dimension 3 -->
+                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-2">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 3</span>
+                            <h3 class="font-bold text-slate-800 text-base">SAMR Task Redesign Focus</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-2">
+                            <button onclick="setDimensionLevel(2, 1)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Substitution</button>
+                            <button onclick="setDimensionLevel(2, 2)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Augmentation</button>
+                            <button onclick="setDimensionLevel(2, 3)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Modification</button>
+                            <button onclick="setDimensionLevel(2, 4)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Redefinition (A)</button>
+                            <button onclick="setDimensionLevel(2, 5)" class="lvl-btn-2 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Redefinition (B)</button>
+                        </div>
+                    </div>
+                    <div id="dim-desc-2" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <!-- Dimension 4 -->
+                <div class="dimension-card mb-6 border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-3">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 4</span>
+                            <h3 class="font-bold text-slate-800 text-base">TPACK Synergy</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-3">
+                            <button onclick="setDimensionLevel(3, 1)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: TK</button>
+                            <button onclick="setDimensionLevel(3, 2)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: TCK</button>
+                            <button onclick="setDimensionLevel(3, 3)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: TPK</button>
+                            <button onclick="setDimensionLevel(3, 4)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Integrated</button>
+                            <button onclick="setDimensionLevel(3, 5)" class="lvl-btn-3 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Mastered</button>
+                        </div>
+                    </div>
+                    <div id="dim-desc-3" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <!-- Dimension 5 -->
+                <div class="dimension-card border border-slate-200 rounded-2xl p-4 sm:p-5 bg-slate-50/50 hover:bg-white transition" id="dim-card-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-xs font-bold text-scotblue-600 uppercase tracking-wider">Dimension 5</span>
+                            <h3 class="font-bold text-slate-800 text-base">Ethical & Critical Digital Literacy</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm" id="btn-group-4">
+                            <button onclick="setDimensionLevel(4, 1)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="1">L1: Unaware</button>
+                            <button onclick="setDimensionLevel(4, 2)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="2">L2: Passive</button>
+                            <button onclick="setDimensionLevel(4, 3)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="3">L3: Verifying</button>
+                            <button onclick="setDimensionLevel(4, 4)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="4">L4: Critical</button>
+                            <button onclick="setDimensionLevel(4, 5)" class="lvl-btn-4 border px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-slate-100" data-level="5">L5: Ethical Driver</button>
+                        </div>
+                    </div>
+                    <div id="dim-desc-4" class="text-xs sm:text-sm text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Qualitative Comments & Coaching Field -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                <h2 class="flex items-center gap-2 text-scotblue-700 font-semibold text-lg mb-3">
+                    <i class="fa-solid fa-comment-dots text-emerald-600"></i>
+                    <span>4. Qualitative Observation Comments & Evidence</span>
+                </h2>
+                
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Qualitative Evidence & Specific Examples</label>
+                        <textarea id="obs-comments" rows="3" placeholder="Note pupil responses, notable prompts typed, instances of pupils checking for hallucinations, or creative use cases..." class="w-full rounded-xl border-slate-300 bg-slate-50 border p-3 focus:bg-white focus:ring-2 focus:ring-scotblue-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <!-- Recommended Coaching Questions Box -->
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-scotblue-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i> Suggested Post-Observation Coaching Questions
+                            </span>
+                            <span class="text-xs text-slate-400">Auto-tailored to calculated profile</span>
+                        </div>
+                        <div id="suggested-coaching-box" class="text-xs sm:text-sm text-slate-700 space-y-1 bg-white p-3 rounded-lg border border-slate-200 font-medium">
+                            <!-- JS populates based on overall score -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Export & Action Bar -->
+            <div class="bg-slate-900 text-white rounded-2xl shadow-lg p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-bold text-base flex items-center gap-2">
+                        <i class="fa-solid fa-file-export text-teal-400"></i> Completed Observation Actions
+                    </h3>
+                    <p class="text-xs text-slate-300 mt-1">Export directly formatted for Google Docs, save locally, or generate document.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <!-- COPY TO GOOGLE DOCS BUTTON -->
+                    <button onclick="copyFormattedForGoogleDocs()" class="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i> Copy for Google Doc
+                    </button>
+
+                    <!-- DOWNLOAD HTML REPORT -->
+                    <button onclick="downloadReportDoc()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download .doc
+                    </button>
+
+                    <!-- SAVE TO LOCAL HISTORY -->
+                    <button onclick="saveObservationLocally()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Entry
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- TAB 2: HISTORY & AGGREGATE ANALYTICS -->
+        <section id="tab-history" class="space-y-6 hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4 mb-6">
+                    <div>
+                        <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-scotblue-600"></i> Observation History & Aggregate Data
+                        </h2>
+                        <p class="text-xs text-slate-500">Anonymous data collected on this device across classroom visits.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportAllCSV()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-200">
+                            <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i> Export CSV
+                        </button>
+                        <button onclick="exportAllJSON()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-200">
+                            <i class="fa-solid fa-code text-blue-600 text-sm"></i> Export JSON
+                        </button>
+                        <button onclick="clearHistory()" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold transition flex items-center gap-1 border border-red-200">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats summary grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs text-slate-500 font-medium block">Total Observations</span>
+                        <span id="stat-total" class="text-2xl font-extrabold text-slate-800">0</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs text-slate-500 font-medium block">Average Level</span>
+                        <span id="stat-avg" class="text-2xl font-extrabold text-scotblue-600">0.0</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs text-slate-500 font-medium block">Most Frequent Level</span>
+                        <span id="stat-mode" class="text-2xl font-extrabold text-amber-600">-</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs text-slate-500 font-medium block">Redefinition % (L4/5)</span>
+                        <span id="stat-redef" class="text-2xl font-extrabold text-emerald-600">0%</span>
+                    </div>
+                </div>
+
+                <!-- Saved List Table -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="bg-slate-100 text-slate-700 uppercase text-[11px] font-bold tracking-wider">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Authority / Stage</th>
+                                <th class="p-3">Subject</th>
+                                <th class="p-3">Assessed Profile</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-slate-200 text-slate-600">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: RUBRIC REFERENCE MATRIX -->
+        <section id="tab-reference" class="space-y-6 hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+                <div class="pb-4 border-b border-slate-100 mb-4">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-scotblue-600"></i> Full Pupil Experience Observation Matrix
+                    </h2>
+                    <p class="text-xs text-slate-500">Mapping pupil experience from Substitution to Redefinition under CfE & TPACK.</p>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-xs text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-slate-800 text-white text-center">
+                                <th class="p-3 w-1/6 text-left">Dimension</th>
+                                <th class="p-3 bg-red-900/40 border-l border-slate-700">L1: Passive</th>
+                                <th class="p-3 bg-orange-900/40 border-l border-slate-700">L2: Guided</th>
+                                <th class="p-3 bg-amber-900/40 border-l border-slate-700">L3: Interactive</th>
+                                <th class="p-3 bg-blue-900/40 border-l border-slate-700">L4: Critical</th>
+                                <th class="p-3 bg-emerald-900/40 border-l border-slate-700">L5: Agency</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-body" class="divide-y divide-slate-200">
+                            <!-- Matrix rows generated in JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Structure for the Rubric (Merged with Gemini for Learners Framework)
+        const RUBRIC_DATA = [
+            {
+                id: 'agency',
+                title: 'Pupil Role, Agency & Prompting Fluency',
+                levels: [
+                    { level: 1, name: 'Passive / One-Shot Query', desc: 'Single-shot basic queries with low prompt control; struggles with generic output; limited refining or contextual guidance.' },
+                    { level: 2, name: 'Guided / Basic Iteration', desc: 'Applies basic context (role, task) using teacher templates; conducts 1-2 follow-up tweaks when initial output is off-target.' },
+                    { level: 3, name: 'Structured Prompting (PARTS)', desc: 'Uses Persona, Act, Recipients, Theme & Structure method. Recognises need for follow-up prompts with back-and-forth dialogue to refine output.' },
+                    { level: 4, name: 'Critical Evaluator & Self-Directed', desc: 'Intentionally tests, verifies, and audits Gemini output. Uses self-directed prompting to create complex workflows and evaluates bias/accuracy.' },
+                    { level: 5, name: 'Mastery & Peer Sharing', desc: 'Designs reusable prompt templates, teaches strategies to peer learners, and autonomously orchestrates complex AI-driven workflows.' }
+                ]
+            },
+            {
+                id: 'blooms',
+                title: 'Personalised Learning & Differentiation (CfE)',
+                levels: [
+                    { level: 1, name: 'Basic Content Prep', desc: 'Generates standard worksheets, quiz items, or basic fact extractions without custom tailoring or learner adaptation.' },
+                    { level: 2, name: 'Some Customisation', desc: 'Basic refinement of output to suit learning needs; learners have a basic degree of choice when using Gemini tools.' },
+                    { level: 3, name: 'Targeted Scaffolding (ASN/ELL)', desc: 'Re-levels complex texts for reading tiers; builds scaffolds, ASN (Additional Support Needs) & ELL support, and tailored study materials.' },
+                    { level: 4, name: 'Personalised Feedback & Depth', desc: 'Creates dynamic, adaptive learning materials, multi-modal resources, and personalised feedback structures to deepen independent understanding.' },
+                    { level: 5, name: 'Adaptive Co-Creation', desc: 'Pupils independently curate personalized learning pathways and co-create multi-modal study systems tailored to their individual needs.' }
+                ]
+            },
+            {
+                id: 'samr',
+                title: 'SAMR & Gemini/Notebook Workspace Use',
+                levels: [
+                    { level: 1, name: 'Basic Standalone Use (Substitution)', desc: 'Uses Gemini and NotebookLM as standalone search engine or spellcheck replacements with no functional task change.' },
+                    { level: 2, name: 'Basic Integration (Augmentation)', desc: 'Uses Gemini and Notebook features within Google Classroom; recognizes output requires follow-up prompts for task enhancement.' },
+                    { level: 3, name: 'Fluent Integration (Modification)', desc: 'Uses Gemini & NotebookLM fluently across Workspace apps; embeds AI outputs into redesigned interactive classroom tasks.' },
+                    { level: 4, name: 'Authentic Real-World Tasks (Redefinition)', desc: 'Creates new, authentic, real-world learning opportunities previously difficult to achieve without tools; optimizes time-saving workflows.' },
+                    { level: 5, name: 'Transformative Workflow Mastery', desc: 'Learners seamlessly orchestrate AI tools across Workspace to lead authentic projects with real-world impact and peer support systems.' }
+                ]
+            },
+            {
+                id: 'tpack',
+                title: 'TPACK Synergy & Tool Selection',
+                levels: [
+                    { level: 1, name: 'TK (Tech Knowledge)', desc: 'Basic awareness of typing into a prompt box without considering pedagogical intent or tool selection.' },
+                    { level: 2, name: 'TCK (Tech + Content)', desc: 'Using technology to access specific curriculum content faster or reformat notes into basic tables.' },
+                    { level: 3, name: 'TPK (Tech + Pedagogy)', desc: 'Using Gemini & Notebooks as pedagogical tools for scaffolding, study support, and interactive practice.' },
+                    { level: 4, name: 'TPACK Integrated', desc: 'Understanding how AI shapes content presentation and using critical pedagogical judgment during learning tasks.' },
+                    { level: 5, name: 'TPACK Mastered', desc: 'Pupils autonomously select when AI adds genuine value (e.g. synthesis, coding, drafting) and when human-only methods are superior.' }
+                ]
+            },
+            {
+                id: 'ethics',
+                title: 'Ethical Literacy & Spotting Bias/Hallucinations',
+                levels: [
+                    { level: 1, name: 'Passive Consumption', desc: 'Treats AI as a direct answer engine; accepts all output as absolute truth with limited critical check of facts or sources.' },
+                    { level: 2, name: 'Guided Supervision', desc: 'Learners use AI for brainstorming or drafting with active step-by-step teacher supervision; basic awareness of AI errors.' },
+                    { level: 3, name: 'Critical Partner & Privacy', desc: 'Learners use AI to outline, critique work, and check facts; understand data privacy rules and ethical use standards.' },
+                    { level: 4, name: 'Spotting Bias & Hallucinations', desc: 'Actively spots hallucinations, subtle bias, tone errors, and invalid citations, challenging output when appropriate.' },
+                    { level: 5, name: 'Ethical Driver & Attribution', desc: 'Demonstrates full integrity in attribution, transparent AI usage declarations, and responsible digital citizenship.' }
+                ]
+            }
+        ];
+
+        const LEVEL_NAMES = [
+            'Level 1: Emerging / Passive Use',
+            'Level 2: Developing / Guided Integration',
+            'Level 3: Proficient / Structured Partner',
+            'Level 4: Exemplary / Authentic Inquiry',
+            'Level 5: Transformative / Pupil Agency'
+        ];
+
+        const COACHING_PROMPTS = {
+            1: "<strong>To move from L1 to L2:</strong> How can we shift pupils from treat AI as a direct answer engine to using basic context (Role, Task) and conducting 1–2 follow-up tweaks?",
+            2: "<strong>To move from L2 to L3:</strong> How can we embed structured prompting (PARTS: Persona, Act, Recipients, Theme, Structure) and use Gemini/NotebookLM to build ASN & ELL text scaffolding?",
+            3: "<strong>To move from L3 to L4:</strong> How can we support learners to use Gemini & NotebookLM to create authentic, real-world learning opportunities while actively spotting hallucinations and bias?",
+            4: "<strong>To move from L4 to L5:</strong> How can pupils design reusable prompt templates and share time-saving AI workflows to mentor peers across the school?"
+        };
+
+        // State variables
+<!-- ... existing code -->
