@@ -241,7 +241,7 @@
                     <div class="lg:col-span-2 space-y-6">
                         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                             <h2 class="text-lg font-bold mb-1 text-slate-800 flex items-center">
-                                <i class="fa-solid fa-layer-group text-purple-500 w-6"></i> 5-Dimension Detailed Scoring
+                                <i class="fa-solid fa-layer-group text-purple-500 w-6"></i> 4-Dimension Detailed Scoring
                             </h2>
                             <p class="text-xs text-slate-500 mb-6">Select 1 (Passive) to 5 (Transformative) for observed dimensions.</p>
                             
@@ -249,75 +249,60 @@
                                 <!-- Dim 1 -->
                                 <div>
                                     <div class="flex justify-between items-end mb-2">
-                                        <h3 class="text-sm font-bold text-slate-800">1. Pupil Role & Agency</h3>
+                                        <h3 class="text-sm font-bold text-slate-800">1. Gemini & Notebook Use</h3>
                                         <span class="text-xs text-slate-400" id="desc-dim1">Select a score</span>
                                     </div>
                                     <div class="flex gap-2" id="grid-dim1">
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 1, 'Passive Viewer')">1</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 2, 'Directed User')">2</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 3, 'Active Prompt Refiner')">3</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 4, 'Collaborative Partner')">4</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 5, 'Workflow Designer')">5</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 1, 'Standalone Use')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 2, 'Basic Integration')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 3, 'Fluent Integration')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 4, 'Advanced Integration')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim1', 5, 'Transformative Workflows')">5</button>
                                     </div>
                                 </div>
 
                                 <!-- Dim 2 -->
                                 <div>
                                     <div class="flex justify-between items-end mb-2">
-                                        <h3 class="text-sm font-bold text-slate-800">2. Cognitive Depth (CfE/Bloom's)</h3>
+                                        <h3 class="text-sm font-bold text-slate-800">2. Learner Prompting</h3>
                                         <span class="text-xs text-slate-400" id="desc-dim2">Select a score</span>
                                     </div>
                                     <div class="flex gap-2" id="grid-dim2">
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 1, 'Remembering')">1</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 2, 'Understanding')">2</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 3, 'Applying')">3</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 4, 'Analyzing/Evaluating')">4</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 5, 'Creating/Innovating')">5</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 1, 'Low Control')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 2, 'Basic Iteration')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 3, 'Structured (PARTS)')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 4, 'Mastery & Sharing')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim2', 5, 'Workflow Designer')">5</button>
                                     </div>
                                 </div>
 
                                 <!-- Dim 3 -->
                                 <div>
                                     <div class="flex justify-between items-end mb-2">
-                                        <h3 class="text-sm font-bold text-slate-800">3. SAMR Focus</h3>
+                                        <h3 class="text-sm font-bold text-slate-800">3. Personalised Learning & Differentiation</h3>
                                         <span class="text-xs text-slate-400" id="desc-dim3">Select a score</span>
                                     </div>
                                     <div class="flex gap-2" id="grid-dim3">
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 1, 'Pre-adoption')">1</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 2, 'Substitution')">2</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 3, 'Augmentation')">3</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 4, 'Modification')">4</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 5, 'Redefinition')">5</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 1, 'Basic Prep')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 2, 'Some Customisation')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 3, 'Targeted Differentiation')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 4, 'Personalised Learning')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim3', 5, 'Adaptive Co-creation')">5</button>
                                     </div>
                                 </div>
 
                                 <!-- Dim 4 -->
                                 <div>
                                     <div class="flex justify-between items-end mb-2">
-                                        <h3 class="text-sm font-bold text-slate-800">4. TPACK Synergy</h3>
+                                        <h3 class="text-sm font-bold text-slate-800">4. Learner AI Literacy Skills</h3>
                                         <span class="text-xs text-slate-400" id="desc-dim4">Select a score</span>
                                     </div>
                                     <div class="flex gap-2" id="grid-dim4">
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 1, 'Tech disconnected')">1</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 2, 'Tech drives content')">2</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 3, 'Tech supports pedagogy')">3</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 4, 'Strong Integration')">4</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 5, 'Perfect Synergy')">5</button>
-                                    </div>
-                                </div>
-
-                                <!-- Dim 5 -->
-                                <div>
-                                    <div class="flex justify-between items-end mb-2">
-                                        <h3 class="text-sm font-bold text-slate-800">5. Ethical Literacy</h3>
-                                        <span class="text-xs text-slate-400" id="desc-dim5">Select a score</span>
-                                    </div>
-                                    <div class="flex gap-2" id="grid-dim5">
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 1, 'Blind trust')">1</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 2, 'Basic awareness')">2</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 3, 'Spots hallucinations')">3</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 4, 'Active fact-checking')">4</button>
-                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim5', 5, 'Understands bias/limits')">5</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 1, 'Passive Consumption')">1</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 2, 'Guided Support')">2</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 3, 'Critical Partner')">3</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 4, 'Mastery')">4</button>
+                                        <button class="dim-btn flex-1 py-2 border border-slate-200 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-50" onclick="setDimension('dim4', 5, 'Independent Evaluator')">5</button>
                                     </div>
                                 </div>
                             </div>
@@ -604,8 +589,8 @@
 
         // --- GLOBAL STATE FOR CURRENT FORM ---
         window.currentData = {
-            dimensions: { dim1: null, dim2: null, dim3: null, dim4: null, dim5: null },
-            dimensionLabels: { dim1: '', dim2: '', dim3: '', dim4: '', dim5: '' },
+            dimensions: { dim1: null, dim2: null, dim3: null, dim4: null },
+            dimensionLabels: { dim1: '', dim2: '', dim3: '', dim4: '' },
             rapidAvg: 0,
             overallLevel: 0
         };
@@ -911,10 +896,10 @@
         // CSV/JSON EXPORT (From memory)
         window.exportCSV = function() {
             if(observationsData.length === 0) return showToast("No data to export", "error");
-            const headers = ["Date", "Local Authority", "School", "Subject", "Level/Year", "Overall Level", "Dim1", "Dim2", "Dim3", "Dim4", "Dim5", "Notes", "Notable Prompts"];
+            const headers = ["Date", "Local Authority", "School", "Subject", "Level/Year", "Overall Level", "Dim1", "Dim2", "Dim3", "Dim4", "Notes", "Notable Prompts"];
             const rows = observationsData.map(o => [
                 o.date, `"${o.localAuthority || 'Unspecified'}"`, `"${o.school}"`, `"${o.subject}"`, `"${o.levelYear}"`, o.overallLevel,
-                o.dimensions.dim1||'', o.dimensions.dim2||'', o.dimensions.dim3||'', o.dimensions.dim4||'', o.dimensions.dim5||'',
+                o.dimensions.dim1||'', o.dimensions.dim2||'', o.dimensions.dim3||'', o.dimensions.dim4||'',
                 `"${(o.notes||'').replace(/"/g, '""')}"`, `"${(o.prompts||'').replace(/"/g, '""')}"`
             ]);
             let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
@@ -949,11 +934,10 @@
             
             // Generate table rows for dimensions safely
             const dimRows = [
-                {n: "1. Pupil Role & Agency", v: window.currentData.dimensions.dim1, l: window.currentData.dimensionLabels.dim1},
-                {n: "2. Cognitive Depth", v: window.currentData.dimensions.dim2, l: window.currentData.dimensionLabels.dim2},
-                {n: "3. SAMR Focus", v: window.currentData.dimensions.dim3, l: window.currentData.dimensionLabels.dim3},
-                {n: "4. TPACK Synergy", v: window.currentData.dimensions.dim4, l: window.currentData.dimensionLabels.dim4},
-                {n: "5. Ethical Literacy", v: window.currentData.dimensions.dim5, l: window.currentData.dimensionLabels.dim5},
+                {n: "1. Gemini & Notebook Use", v: window.currentData.dimensions.dim1, l: window.currentData.dimensionLabels.dim1},
+                {n: "2. Learner Prompting", v: window.currentData.dimensions.dim2, l: window.currentData.dimensionLabels.dim2},
+                {n: "3. Personalised Learning & Differentiation", v: window.currentData.dimensions.dim3, l: window.currentData.dimensionLabels.dim3},
+                {n: "4. Learner AI Literacy Skills", v: window.currentData.dimensions.dim4, l: window.currentData.dimensionLabels.dim4}
             ].map(d => {
                 return `
                 <tr>
